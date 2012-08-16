@@ -9,3 +9,4 @@
 /config.log
 /config/configStorage
 /.sconsign.dblite
+/.sconf_temp
