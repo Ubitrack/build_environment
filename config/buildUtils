@@ -18,7 +18,7 @@ def createVisualStudioProject(env, sources, header, aliasName):
 		msvsTopDirProjects += [ vcproj ]
 	return
 
-
+# create a single library file from the sources
 def setupSingleComponentBuild(env, sources, libName, aliasName = 'components'):
 	lib = env.SharedLibrary( libName + configuration_suffix, sources )
 	Default( lib )
