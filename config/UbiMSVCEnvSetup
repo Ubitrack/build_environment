@@ -1,0 +1,45 @@
+import glob
+import sys
+import os
+import config
+import string
+import SCons
+
+Import( '*')
+
+masterEnv['ENV']['TMP'] = os.environ['TMP']
+	
+# settings for microsoft c++
+masterEnv.Append( CCFLAGS = [ '/EHsc','/c', '/W3', '/GR', '/wd4355', '/wd4996', '/wd4251', '/wd4275', '/wd4819', '/wd4290' ] )
+masterEnv.Append( CPPDEFINES = [ 'WIN32', '_MBCS', '_WIN32_WINNT=0x501' ] )
+masterEnv.Append( LINKFLAGS = [ '/SUBSYSTEM:CONSOLE' ] )
+if platform == 'x86':
+	masterEnv.Append( LINKFLAGS = [ '/MACHINE:X86' ] )
+else:
+	masterEnv.Append( CPPDEFINES = [ 'WIN64' ] )
+#	masterEnv.Append( LINKFLAGS = [ '/MACHINE:X64' ] )
+
+if configuration == 'release':
+	masterEnv.Append( CCFLAGS = [ '/O2', '/MD' ] )
+	masterEnv.Append( CPPDEFINES = [ 'NDEBUG' ] )
+	masterEnv.Append( variant = 'Release' )
+else:
+	masterEnv.Append( CCFLAGS = [ '/Od', '/RTC1', '/MDd', '/Z7' ] )
+	masterEnv.Append( CPPDEFINES = [ '_DEBUG' ] )
+	# incremental builds won't work anyways, so turning it off explicitly should save the time and space for trying
+	masterEnv.Append( LINKFLAGS = [ '/DEBUG', '/INCREMENTAL:NO' ] ) 
+	masterEnv.Append( variant = 'Debug' )
+
+# embed manifest files into exe and dll files
+if masterEnv.get( 'MSVS_VERSION', '6.0' )  >= '8.0':
+	masterEnv[ 'LINKCOM' ] = [ masterEnv[ 'LINKCOM' ], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1' ]
+	masterEnv[ 'SHLINKCOM' ] = [ masterEnv[ 'SHLINKCOM' ], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;2' ]
+
+# create a global list of visual studio projects in the top level directory to be merged with the solution file
+# it would be nicer if there was a scons command to get a list of all .vcproj nodes created in this directory
+if 'vcproj' in COMMAND_LINE_TARGETS:
+	msvsTopDirProjects = []
+	Export( 'msvsTopDirProjects' )
+		
+# export auxilliary functions
+Export( 'masterEnv' )

@@ -1,0 +1,21 @@
+import glob
+import sys
+import os
+import config
+import string
+import SCons
+
+Import( '*')
+
+masterEnv.Append( CCFLAGS = [ '-pthread', '-Wall' ] )
+masterEnv.Append( LINKFLAGS = [ '-Wl,-E' ] )
+
+if configuration == 'release':
+	masterEnv.Append( CCFLAGS = [ '-O3' ] )
+else:
+	masterEnv.Append( CPPDEFINES = [ '_DEBUG' ] )
+	masterEnv.Append( CCFLAGS = [ '-g' ] )
+		
+		
+# export auxilliary functions
+Export( 'masterEnv' )

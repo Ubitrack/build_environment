@@ -1,0 +1,1 @@
+replace this file in your scons 2.1.0 installation for visual studio projects with single source files

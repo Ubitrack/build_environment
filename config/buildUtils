@@ -1,0 +1,125 @@
+import os
+import sys
+import os.path
+import glob
+
+Import('*')
+def toVCProjPath( l ):	
+	return map( lambda x: os.path.join( '..' , File( x ).srcnode().path), l )
+	
+def createVisualStudioProject(env, sources, header, aliasName):
+	global msvsTopDirProjects
+	# also create one visual studio project for all components
+	if 'vcproj' in COMMAND_LINE_TARGETS:
+		vcproj = env.MSVSProject( target = '#/vcproj/'+aliasName + env[ 'MSVSPROJECTSUFFIX' ], 
+			srcs = toVCProjPath( sources ), incs = toVCProjPath( header ), 
+			buildtarget = Dir( '.' ), auto_build_solution = 0 )
+		Alias (['vcproj'], vcproj)
+		msvsTopDirProjects += [ vcproj ]
+	return
+
+
+def setupSingleComponentBuild(env, sources, libName, aliasName = 'components'):
+	lib = env.SharedLibrary( libName + configuration_suffix, sources )
+	Default( lib )
+	libNames =  [ libName + configuration_suffix ];
+	Alias( [ 'install', 'install-all', 'install-'+aliasName ], installLibs( env, install_component_prefix, '', lib, True ) )
+	Alias( [ aliasName ], lib  )
+	
+	return libNames;
+
+def setupComponentBuild(env, sources, aliasName = 'components'):
+	all_libs = []
+	libNames = []
+	for comp in sources:
+		libName = os.path.splitext( os.path.basename( comp ) )[ 0 ]+ configuration_suffix
+		lib = env.SharedLibrary( libName , comp )
+		all_libs += lib
+		libNames += libName
+
+		# make this a default target
+		Default( lib )
+		
+	# install to component directory
+	Alias( [ 'install-all', 'install-'+aliasName ], installLibs(env, install_component_prefix,'', all_libs, True ) )
+	Alias( [aliasName, 'all' ], all_libs )
+	
+
+	return libNames
+
+def setupLibraryBuild(env, sources, libName, aliasName = 'components'):
+	lib = env.SharedLibrary( libName + configuration_suffix, sources )	
+	Default( lib )
+	libNames =  [ libName + configuration_suffix ];	
+	Alias( [ 'install', 'install-all', 'install-'+aliasName ], installLibs( env, install_binary_prefix, install_library_prefix, lib ) )
+	Alias( [ aliasName ], lib  )
+	return libNames
+
+def setupStaticLibraryBuild(env, sources, libName, aliasName = 'components'):
+	lib = env.StaticLibrary( libName + configuration_suffix, sources )
+	Default( lib )
+	libNames =  [ libName + configuration_suffix ];
+	Alias( [ 'install', 'install-all', 'install-'+aliasName ], installLibs( env, install_binary_prefix, install_library_prefix, lib ) )
+	Alias( [ aliasName ], lib  )
+	return libNames
+
+def setupAppBuild(env, sources, appName, aliasName = 'components'):
+	lib = env.Program( appName + configuration_suffix, sources )
+	Default( lib )
+	libNames =  [ appName + configuration_suffix ];
+	Alias( [ 'install', 'install-all', 'install-'+aliasName ], env.Install(install_binary_prefix, lib ) )
+	Alias( [ aliasName ], lib  )
+	return libNames
+
+def setupDocInstall(env, docRoot,  aliasName = 'utql'):
+
+	utqlDirs = globDirectories(  os.path.join( docRoot, '*' ))
+	utqlFiles = glob.glob( os.path.join(getCurrentPath(), docRoot, '*.*' ) )	
+	if aliasName == 'marker':
+		print utqlDirs
+	instDir = os.path.join(install_document_prefix ,docRoot)		
+	for n in utqlDirs:
+		setupDocInstall(env, n, aliasName)
+        
+	for n in utqlFiles:		
+		instFile = env.Install(instDir, n )			
+		Alias( [ 'documents', 'install-all', 'install-'+aliasName ],  instFile)
+		
+	return
+	
+def setupIncludeInstall(env, sources, suffix, aliasName = 'includes'):	
+	instDir = os.path.join(install_include_prefix ,suffix)
+	Alias( [ 'includes', 'install-all', 'install-'+aliasName ], env.Install(instDir, sources ) )	
+	return
+	
+	
+	
+	
+def generateHelp(options):
+	keys = ['CPPDEFINES', 'CPPPATH', 'LIBPATH', 'LIBS']
+	values = {}
+	for key in keys:
+		if(options.has_key(key)):
+			values[key] = options[key]
+		else:
+			values[key] = ''
+
+	
+	compileAndLinkHelp = """
+
+	To link against the utcore library from outside the Ubitrack build system, please use the following options:
+
+   	CPPDEFINES : %s
+   	CPPPATH    : %s
+   	LIBPATH    : %s
+   	LIBS       : %s
+
+	""" % ( values[ 'CPPDEFINES' ], pathListToStringList( values[ 'CPPPATH' ] ),
+ 	pathListToStringList( values[ 'LIBPATH' ] ), values[ 'LIBS' ] )
+	
+
+	# generate help text for command line
+	Help( compileAndLinkHelp )
+
+
+Export('createVisualStudioProject', 'setupComponentBuild',  'setupSingleComponentBuild' ,'setupLibraryBuild', 'setupStaticLibraryBuild', 'generateHelp', 'setupAppBuild', 'setupDocInstall', 'setupIncludeInstall')

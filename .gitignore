@@ -1,0 +1,11 @@
+/bin
+/bin32
+/build
+/doc
+/lib
+/lib32
+/vcproj
+/config.cache
+/config.log
+/config/configStorage
+/.sconsign.dblite
