@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "UbiTrack"
-#define MyAppVersion "1.0"
+#define MyAppVersion "0.2 beta"
 #define MyAppPublisher "Technische Universitat München"
 #define MyAppURL "http://campar.in.tum.de/UbiTrack"
 
@@ -40,9 +40,12 @@ Name: "english"; MessagesFile: "compiler:Default.isl"
 [Tasks]
 ;Name: modifypath; Description: "&Install UbiTrack for the Current User"; Flags: unchecked
 
-Name: allUsers; Description: "&All users"; GroupDescription: "Modify Path For:"; Flags: exclusive 
-Name: currentUser;  Description: "Just &me"; GroupDescription: "Modify Path For:"; Flags: exclusive unchecked
-Name: noUser;  Description: "&None"; GroupDescription: "Modify Path For:"; Flags: exclusive unchecked
+Name: "allUsers"; Description: "&All users"; GroupDescription: "Add UbiTrack to Path:"; Flags: exclusive; Components: Ubitrack64
+Name: "currentUser"; Description: "Just &me"; GroupDescription: "Add UbiTrack to Path:"; Flags: exclusive unchecked; Components: Ubitrack64
+
+Name: "allUsers32"; Description: "All users 32bit"; GroupDescription: "Add UbiTrack to Path:"; Flags: exclusive unchecked; Components: Ubitrack32
+Name: "currentUser32"; Description: "Just me 32bit"; GroupDescription: "Add UbiTrack to Path:"; Flags: exclusive unchecked; Components: Ubitrack32
+Name: "noUser"; Description: "&None"; GroupDescription: "Add UbiTrack to Path:"; Flags: exclusive unchecked
 
 [Files]
 ;UbiTrack files 64 bit
@@ -75,12 +78,12 @@ Name: Ubitrack64; Description: Ubitrack 64 bit; Types: Ubitrack full
 Name: Trackman; Description: Trackman; Types: Trackman full
 
 [Registry]
-Root: "HKCU"; Subkey: "Environment"; ValueType: string; ValueName: "UBITRACK_PATH"; ValueData: "{app}\UbiTrack\bin"; Flags: uninsdeletevalue; Tasks: currentUser
-Root: "HKLM"; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: string; ValueName: "UBITRACK_PATH"; ValueData: "{app}\UbiTrack\bin"; Flags: uninsdeletevalue; Tasks: allUsers noUser
+Root: "HKCU"; Subkey: "Environment"; ValueType: string; ValueName: "UBITRACK_PATH"; ValueData: "{app}\UbiTrack\bin"; Flags: uninsdeletevalue; Components: Ubitrack64; Tasks: currentUser
+Root: "HKLM"; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: string; ValueName: "UBITRACK_PATH"; ValueData: "{app}\UbiTrack\bin"; Flags: uninsdeletevalue; Components: Ubitrack64; Tasks: allUsers
+Root: "HKCU"; Subkey: "Environment"; ValueType: string; ValueName: "UBITRACK_PATH"; ValueData: "{app}\UbiTrack\bin32"; Flags: uninsdeletevalue; Components: Ubitrack32; Tasks: currentUser32
+Root: "HKLM"; Subkey: "SYSTEM\CurrentControlSet\Control\Session Manager\Environment"; ValueType: string; ValueName: "UBITRACK_PATH"; ValueData: "{app}\UbiTrack\bin32"; Flags: uninsdeletevalue; Components: Ubitrack32; Tasks: allUsers32
 
-
-[code]
-
+[Code]
 var 	
   ModPathName : String;
   ModPathType : String;
@@ -105,6 +108,14 @@ begin
      else if IsTaskSelected('currentUser') then begin
        ModPathName := 'currentUser'; 
        ModPathType := 'user';
+     end
+     else if IsTaskSelected('allUsers32') then begin
+       ModPathName := 'allUsers32'; 
+       ModPathType := 'system';     
+     end
+     else if IsTaskSelected('currentUser32') then begin
+       ModPathName := 'currentUser32'; 
+       ModPathType := 'user';
      end;
       
       
@@ -113,8 +124,7 @@ end;
 
 procedure CurStepChanged(CurStep: TSetupStep);
 var
-	taskname:	String;
-  javaExe : String;
+	taskname:	String;  
   batFile : String;
 begin
 	taskname := ModPathName;
@@ -124,23 +134,17 @@ begin
 			ModPath();
     
     if IsComponentSelected('Trackman') and IsComponentSelected('UbiTrack32') then
-    begin
-      javaExe := getJavaExe32();
+    begin      
       batFile :=  ExpandConstant('{app}\Trackman\bin\startTrackman32.bat');
-      CreateTrackingConfigFile(javaExe, batFile);    
+      CreateTrackingConfigFile(True, batFile);    
     end;
     
     if IsComponentSelected('Trackman') and IsComponentSelected('UbiTrack64') then
-    begin
-      javaExe := getJavaExe();
+    begin      
       batFile :=  ExpandConstant('{app}\Trackman\bin\startTrackman.bat');
-      CreateTrackingConfigFile(javaExe, batFile);    
+      CreateTrackingConfigFile(False, batFile);    
     end;
   end;
 		
     
 end;
-
-
-
-

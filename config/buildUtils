@@ -7,7 +7,7 @@ Import('*')
 def toVCProjPath( l ):	
 	return map( lambda x: os.path.join( '..' , File( x ).srcnode().path), l )
 	
-def createVisualStudioProject(env, sources, header, aliasName):
+def createVisualStudioProject(env, sources, header, aliasName = 'vcproj'):
 	global msvsTopDirProjects
 	# also create one visual studio project for all components
 	if 'vcproj' in COMMAND_LINE_TARGETS:
@@ -63,8 +63,16 @@ def setupStaticLibraryBuild(env, sources, libName, aliasName = 'components'):
 	Alias( [ aliasName ], lib  )
 	return libNames
 
-def setupAppBuild(env, sources, appName, aliasName = 'components'):
+def setupAppBuild(env, sources, appName, aliasName = 'apps'):
 	lib = env.Program( appName + configuration_suffix, sources )
+	Default( lib )
+	libNames =  [ appName + configuration_suffix ];
+	Alias( [ 'install', 'install-all', 'install-'+aliasName ], env.Install(install_binary_prefix, lib ) )
+	Alias( [ aliasName ], lib  )
+	return libNames
+
+def setupAppLibBuild(env, sources, appName, aliasName = 'apps'):
+	lib = env.SharedLibrary( appName + configuration_suffix, sources )
 	Default( lib )
 	libNames =  [ appName + configuration_suffix ];
 	Alias( [ 'install', 'install-all', 'install-'+aliasName ], env.Install(install_binary_prefix, lib ) )
@@ -122,4 +130,4 @@ def generateHelp(options):
 	Help( compileAndLinkHelp )
 
 
-Export('createVisualStudioProject', 'setupComponentBuild',  'setupSingleComponentBuild' ,'setupLibraryBuild', 'setupStaticLibraryBuild', 'generateHelp', 'setupAppBuild', 'setupDocInstall', 'setupIncludeInstall')
+Export('createVisualStudioProject', 'setupComponentBuild',  'setupSingleComponentBuild' ,'setupLibraryBuild', 'setupStaticLibraryBuild', 'generateHelp', 'setupAppBuild', 'setupDocInstall', 'setupIncludeInstall', 'setupAppLibBuild')
