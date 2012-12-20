@@ -47,7 +47,7 @@ class AbstractLibraryFinder:
 		if self.options_para.has_key('LIBPATH') :			
 			libEnding = ''
 			if sys.platform.startswith( 'linux' ):
-				libEnding = '.o'
+				libEnding = '.so'
 			else :
 				libEnding = '.lib'
 

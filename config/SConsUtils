@@ -58,7 +58,14 @@ def installLibs( env, prefix_bin, prefix_lib, files, dllOnly = False ):
 			r += env.Install( prefix_lib, fileListLib )
 		return r
 	else:		
-		return env.Install( prefix_lib, files )
+		fileListDll = filter( lambda x: x.path.endswith( ".so" ), files )
+		fileListLib = filter( lambda x: x.path.endswith( ".a" ), files )			
+		r = env.Install( prefix_bin, fileListDll )		
+		if not dllOnly:			
+			r += env.Install( prefix_lib, fileListLib )
+		return r
+
+#		return env.Install( prefix_lib, files )
 
 # define a builder that creates files from strings
 # the content must be given as "source = Value( '...' )"
