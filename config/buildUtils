@@ -17,7 +17,7 @@ def createVisualStudioProject(env, sources, header, aliasName = 'vcproj'):
 			srcs = toVCProjPath( sources ), incs = toVCProjPath( header ), 
 			buildtarget = Dir( '.' ), auto_build_solution = 0 )
 		# build target 'vcproj' for solution creation
-		Alias (['vcproj'], vcproj)
+		Alias (['vcproj', 'all'], vcproj)
 		msvsTopDirProjects += [ vcproj ]
 	return
 
@@ -28,8 +28,8 @@ def setupSingleComponentBuild(env, sources, libName, aliasName = 'components'):
 	# single library build
 	libNames =  [ libName + configuration_suffix ];
 	# create build targets for compile and install
-	Alias( [ 'install', 'install-all', 'install-'+aliasName ], installLibs( env, install_component_prefix, '', lib, True ) )
-	Alias( [ aliasName ], lib  )
+	Alias( [ 'install-all', 'install-'+aliasName ], installLibs( env, install_component_prefix, '', lib, True ) )
+	Alias( [ aliasName, 'all' ], lib  )
 	
 	return libNames;
 
@@ -59,8 +59,8 @@ def setupLibraryBuild(env, sources, libName, aliasName = 'components'):
 	Default( lib )
 	libNames =  [ libName + configuration_suffix ];	
 	# create build targets for compile and install
-	Alias( [ 'install', 'install-all', 'install-'+aliasName ], installLibs( env, install_binary_prefix, install_library_prefix, lib ) )
-	Alias( [ aliasName ], lib  )
+	Alias( [ 'install-all', 'install-'+aliasName ], installLibs( env, install_binary_prefix, install_library_prefix, lib ) )
+	Alias( [ aliasName, 'all' ], lib  )
 	return libNames
 
 # create a single static library file from the sources and setup the install targets. The library will be installed to the binary directory (e.g. bin)	
@@ -70,8 +70,8 @@ def setupStaticLibraryBuild(env, sources, libName, aliasName = 'components'):
 	Default( lib )
 	libNames =  [ libName + configuration_suffix ];
 	# create build targets for compile and install
-	Alias( [ 'install', 'install-all', 'install-'+aliasName ], installLibs( env, install_binary_prefix, install_library_prefix, lib ) )
-	Alias( [ aliasName ], lib  )
+	Alias( [ 'install-all', 'install-'+aliasName ], installLibs( env, install_binary_prefix, install_library_prefix, lib ) )
+	Alias( [ aliasName, 'all' ], lib  )
 	return libNames
 
 # create a single application executable from the sources and setup the install targets. The application will be installed to the binary directory (e.g. bin)	
@@ -81,8 +81,8 @@ def setupAppBuild(env, sources, appName, aliasName = 'apps'):
 	Default( lib )
 	libNames =  [ appName + configuration_suffix ];
 	# create build targets for compile and install
-	Alias( [ 'install', 'install-all', 'install-'+aliasName ], env.Install(install_binary_prefix, lib ) )
-	Alias( [ aliasName ], lib  )
+	Alias( [ 'install-all', 'install-'+aliasName ], env.Install(install_binary_prefix, lib ) )
+	Alias( [ aliasName, 'all' ], lib  )
 	return libNames
 
 # create a single application library from the sources and setup the install targets. The library will be installed to the binary directory (e.g. bin)	
@@ -92,8 +92,8 @@ def setupAppLibBuild(env, sources, appName, aliasName = 'apps'):
 	Default( lib )
 	libNames =  [ appName + configuration_suffix ];
 	# create build targets for compile and install
-	Alias( [ 'install', 'install-all', 'install-'+aliasName ], env.Install(install_binary_prefix, lib ) )
-	Alias( [ aliasName ], lib  )
+	Alias( [ 'install-all', 'install-'+aliasName ], env.Install(install_binary_prefix, lib ) )
+	Alias( [ aliasName, 'all' ], lib  )
 	return libNames
 
 # setup the build targets for the document folder	
@@ -113,7 +113,7 @@ def setupDocInstall(env, docRoot,  aliasName = 'utql'):
 # setup build targets to install header files into the 'include' directory	
 def setupIncludeInstall(env, sources, suffix, aliasName = 'includes'):	
 	instDir = os.path.join(install_include_prefix ,suffix)
-	Alias( [ 'includes', 'install-all', 'install-'+aliasName ], env.Install(instDir, sources ) )	
+	Alias( [ 'includes', 'all', 'install-all', 'install-'+aliasName ], env.Install(instDir, sources ) )	
 	return
 	
 # generate console output that describes how to link against the library	
