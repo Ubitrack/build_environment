@@ -7,6 +7,8 @@ import SCons
 
 Import( '*')
 
+# setup of build enviroment for microsoft windows
+
 masterEnv['ENV']['TMP'] = os.environ['TMP']
 	
 # settings for microsoft c++

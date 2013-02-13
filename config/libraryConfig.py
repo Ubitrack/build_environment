@@ -6,13 +6,16 @@ import json
 Import( '*')
   	
 
+# helper classes for setup up external library dependencies
 
+# base class for checking if a library config is valid
 class AbstractLibraryFinder:
 	libName = ''
 	options_para = {}
 	checkLibParameters = []
 	debug_tags = []
 
+	
 	def __init__(self, libName, checkLibParameters, debug_tags = ['-d', '_d', '-gd', '_debug']):
 		self.libName = libName
 		self.checkLibParameters = checkLibParameters
@@ -223,7 +226,7 @@ class SimpleEnviromentLibraryFinder(AbstractLibraryFinder):
 
 	
 
-
+# save and load library configurations in a human readable format. Uses a library finder if the current configuration is not valid
 class SimpleLibraryConfiguration:
 	libName = ''
 	lib_options = ConfigParser.SafeConfigParser()	
