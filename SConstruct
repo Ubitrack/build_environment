@@ -171,6 +171,7 @@ Export ('global_settings')
 
 for module in ubitrackBuildOrder:
 	configFiles = globSourceFiles( os.path.join( module, 'config', '*') )
+	configFiles = sorted( configFiles )
 	for configFile in configFiles:		
 			SConscript( configFile )
 
