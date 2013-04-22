@@ -48,11 +48,15 @@ class AbstractLibraryFinder:
 	def tryFindingLibs(self):
 		libs_	= []
 		if self.options_para.has_key('LIBPATH') :			
+			lowername = self.libName.lower()
+
 			libEnding = ''
 			if sys.platform.startswith( 'linux' ):
 				libEnding = '.so'
+				libPrefix = 'lib'
 			else :
 				libEnding = '.lib'
+				libPrefix = ''
 
 			for libPath in self.options_para[ 'LIBPATH']:
 				dirList=os.listdir(libPath)
@@ -60,6 +64,12 @@ class AbstractLibraryFinder:
 				lib_debug = []
 				
 				for fname in dirList: # check all files in libpath directory
+					# is this one of the searched libraries?
+					# starts with prefix, contains name of the library
+					if not fname.lower().startswith(libPrefix):
+						if fname.lower().find(lowername) == -1:
+							continue
+
 					isDebugLib = False
 					for debug_tag in self.debug_tags:
 						#if fname.endswith(debug_tag+libEnding)  :
@@ -94,7 +104,7 @@ class AbstractLibraryFinder:
 			print "Library Path :" +  str(self.options_para['LIBPATH'])
 		else:
 			print "Library Path : -"
-		self.options_para['LIBS'] = libs_					
+		self.options_para['LIBS'] = libs_
 		self.options_para['HAVELIB'] = self.isLibraryAvailable()
 		if self.options_para['HAVELIB']:
 			self.options_para['CPPDEFINES'] = [ 'HAVE_'+self.libName]
@@ -110,19 +120,19 @@ class AbstractLibraryFinder:
 		cenv.Append( **self.checkLibParameters[0] )
 		cenv.Append( **self.getLibraryOptions() )
 		conf = Configure( cenv )
-		have_lib = False		
+		have_lib = False
 		if len(self.checkLibParameters) == 3:			
 			have_lib = conf.CheckHeader( self.checkLibParameters[1], language = self.checkLibParameters[2])			
 		elif len(self.checkLibParameters) == 4:						
 			if self.checkLibParameters[1] == '':				
 				have_lib = conf.CheckLib( self.options_para['LIBS'], self.checkLibParameters[3], language = self.checkLibParameters[2],  autoadd = 0 )			
 			else:				
-				have_lib = conf.CheckLib( self.checkLibParameters[1],  self.checkLibParameters[3], language = self.checkLibParameters[2],  autoadd = 0 )						
+				have_lib = conf.CheckLib( self.checkLibParameters[1],  self.checkLibParameters[3], language = self.checkLibParameters[2],  autoadd = 0 )
 		else:
 			if self.checkLibParameters[1] == '':				
-				have_lib = conf.CheckLibWithHeader( self.options_para['LIBS'], self.checkLibParameters[2], self.checkLibParameters[3], self.checkLibParameters[4], 0 )		
+				have_lib = conf.CheckLibWithHeader( self.options_para['LIBS'], self.checkLibParameters[2], self.checkLibParameters[3], self.checkLibParameters[4], autoadd = 0 )
 			else:
-				have_lib = conf.CheckLibWithHeader( self.checkLibParameters[1], self.checkLibParameters[2], self.checkLibParameters[3], self.checkLibParameters[4], 0 )			
+				have_lib = conf.CheckLibWithHeader( self.checkLibParameters[1], self.checkLibParameters[2], self.checkLibParameters[3], self.checkLibParameters[4], autoadd = 0 )
 		conf.Finish()
 		return have_lib
 
