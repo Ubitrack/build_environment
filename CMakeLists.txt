@@ -7,7 +7,7 @@ MESSAGE(STATUS ${CMAKE_CXX_COMPILER})
 SET(CMAKE_MODULE_PATH "${UBITRACK_SOURCE_DIR}/cmake" )
 
 # Needs to find module directories automatically ..
-SET(components utcore)
+SET(components utcore utDataflow)
 
 FOREACH(component ${components})
   IF(EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/modules/${component})
