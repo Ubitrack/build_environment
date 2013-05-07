@@ -68,9 +68,18 @@ IF(TBB_FOUND)
 ENDIF(TBB_FOUND)
 
 
+SET(HAVE_OPENGL 0)
+find_package(OpenGL)
+IF(OpenGL_FOUND)
+  add_definitions(-DHAVE_OPENGL)
+  SET(HAVE_OPENGL 1)
+  MESSAGE(STATUS "Found OpenGL: ${OpenGL_INCLUDE_DIR} - ${OpenGL_LIBRARIES}")
+ENDIF(OpenGL_FOUND)
+
 SET(HAVE_FREEGLUT 0)
 find_package(Freeglut)
 IF(Freeglut_FOUND)
   add_definitions(-DHAVE_FREEGLUT)
   SET(HAVE_FREEGLUT 1)
+  MESSAGE(STATUS "Found Freeglut: ${Freeglut_INCLUDE_DIR} - ${Freeglut_LIBRARIES}")
 ENDIF(Freeglut_FOUND)

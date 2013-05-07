@@ -406,8 +406,8 @@ endmacro()
 # Usage:
 # ut_glob_module_sources(<extra sources&headers in the same format as used in ut_set_module_sources>)
 macro(ut_glob_module_sources)
-  file(GLOB lib_srcs     "src/*.cpp" "src/*/*.cpp" "src/*/*/*.cpp")
-  file(GLOB lib_hdrs     "src/*.h" "src/*/*.h" "src/*/*/*.h")
+  file(GLOB lib_srcs     "src/*.cpp" "src/*/*.cpp" "src/*/*/*.cpp" "src/*.c" "src/*/*.c" "src/*/*/*.c")
+  file(GLOB lib_hdrs     "src/*.h" "src/*/*.h" "src/*/*/*.h" "src/*.hpp" "src/*/*.hpp" "src/*/*/*.hpp")
   ut_set_module_sources(${ARGN} HEADERS ${lib_hdrs}
                                  SOURCES ${lib_srcs})
 
@@ -419,8 +419,8 @@ endmacro()
 # Usage:
 # ut_glob_module_sources(<extra sources&headers in the same format as used in ut_set_module_sources>)
 macro(ut_glob_local_sources)
-  file(GLOB lib_srcs     "*.cpp")
-  file(GLOB lib_hdrs     "*.h")
+  file(GLOB lib_srcs     "*.cpp" "*.c")
+  file(GLOB lib_hdrs     "*.h" "*.hpp")
   ut_set_module_sources(${ARGN} HEADERS ${lib_hdrs}
                                  SOURCES ${lib_srcs})
 

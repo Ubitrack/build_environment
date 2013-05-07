@@ -32,32 +32,54 @@ ELSE (WIN32)
   
   IF (APPLE)
     # These values for Apple could probably do with improvement.
-    FIND_PATH( Freeglut_INCLUDE_DIR freeglut.h
-      /System/Library/Frameworks/Freeglut.framework/Versions/A/Headers
-      ${OPENGL_LIBRARY_DIR}
-      )
-    SET(Freeglut_glut_LIBRARY "-framework Freeglut" CACHE STRING "Freeglut library for OSX") 
-    SET(Freeglut_cocoa_LIBRARY "-framework Cocoa" CACHE STRING "Cocoa framework for OSX")
-  ELSE (APPLE)
+    #FIND_PATH( Freeglut_INCLUDE_DIR freeglut.h
+    #  /System/Library/Frameworks/Freeglut.framework/Versions/A/Headers
+    #  ${OPENGL_LIBRARY_DIR}
+    #  )
+    #SET(Freeglut_glut_LIBRARY "-framework Freeglut" CACHE STRING "Freeglut library for OSX") 
+    #SET(Freeglut_cocoa_LIBRARY "-framework Cocoa" CACHE STRING "Cocoa framework for OSX")
     
     FIND_PATH( Freeglut_INCLUDE_DIR GL/freeglut.h
-      /usr/include/GL
-      /usr/openwin/share/include
-      /usr/openwin/include
-      /opt/graphics/OpenGL/include
-      /opt/graphics/OpenGL/contrib/libglut
+      /opt/local/include
+      /usr/local/include
       )
   
     FIND_LIBRARY( Freeglut_glut_LIBRARY glut
-      /usr/openwin/lib
+      /opt/local/lib
+      /usr/local/lib
       )
     
     FIND_LIBRARY( Freeglut_Xi_LIBRARY Xi
-      /usr/openwin/lib
+      /opt/local/lib
+      /usr/local/lib
       )
     
     FIND_LIBRARY( Freeglut_Xmu_LIBRARY Xmu
-      /usr/openwin/lib
+      /opt/local/lib
+      /usr/local/lib
+      )
+
+
+  ELSE (APPLE)
+    
+    FIND_PATH( Freeglut_INCLUDE_DIR GL/freeglut.h
+      /usr/include
+      /usr/local/include
+      )
+  
+    FIND_LIBRARY( Freeglut_glut_LIBRARY glut
+      /usr/lib
+      /usr/local/lib
+      )
+    
+    FIND_LIBRARY( Freeglut_Xi_LIBRARY Xi
+      /usr/lib
+      /usr/local/lib
+      )
+    
+    FIND_LIBRARY( Freeglut_Xmu_LIBRARY Xmu
+      /usr/lib
+      /usr/local/lib
       )
     
   ENDIF (APPLE)
