@@ -116,6 +116,7 @@ SET(UBITRACK_LIBVERSION "${UBITRACK_VERSION_MAJOR}.${UBITRACK_VERSION_MINOR}.${U
 
 # Should be an option ..
 SET(BUILD_SHARED_LIBS ON)
+SET(BUILD_UTCONSOLE ON)
 
 
 # ----------------------------------------------------------------------------
