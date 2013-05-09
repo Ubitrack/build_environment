@@ -479,8 +479,8 @@ macro(ut_glob_component_sources)
   ut_set_component_sources(HEADERS ${lib_hdrs}
                            SOURCES ${lib_srcs})
 
-  source_group("Component Src" FILES ${lib_srcs})
-  source_group("Component Include" FILES ${lib_hdrs})
+  source_group("Src" FILES ${lib_srcs})
+  source_group("Include" FILES ${lib_hdrs})
 endmacro()
 
 # creates UbiTrack module in current folder
@@ -547,16 +547,13 @@ macro(ut_create_module)
 	    ARCHIVE DESTINATION ${UBITRACK_LIB_INSTALL_PATH} COMPONENT main
 	    )
 
-	  # TBD !!
 	  # only "public" headers need to be installed
-	  #if(UBITRACK_MODULE_${the_module}_HEADERS AND ";${UBITRACK_MODULES_PUBLIC};" MATCHES ";${the_module};")
-	  #  foreach(hdr ${UBITRACK_MODULE_${the_module}_HEADERS})
-	  #    string(REGEX REPLACE "^.*ubitrack2/" "ubitrack2/" hdr2 "${hdr}")
-	  #    if(hdr2 MATCHES "^(ubitrack2/.*)[^/]+.h(..)?$" AND NOT hdr2 MATCHES "ubitrack2/${the_module}/private.*")
-	  #      install(FILES ${hdr} DESTINATION "${UBITRACK_INCLUDE_INSTALL_PATH}/${CMAKE_MATCH_1}" COMPONENT main)
-	  #    endif()
-	  #  endforeach()
-	  #endif()
+	  if(UBITRACK_MODULE_${the_module}_HEADERS AND ";${UBITRACK_MODULES_PUBLIC};" MATCHES ";${the_module};")
+	    foreach(hdr ${UBITRACK_MODULE_${the_module}_HEADERS})
+	      string(REGEX REPLACE "^.*modules/.*/src/" "" hdr2 "${hdr}")
+	      install(FILES ${hdr} DESTINATION "${UBITRACK_INCLUDE_INSTALL_PATH}/${hdr2}" COMPONENT main)
+	    endforeach()
+	  endif()
   endif(UBITRACK_MODULE_${the_module}_SOURCES)
 
   if(UBITRACK_MODULE_${the_module}_COMPONENT_SOURCES)
@@ -610,20 +607,8 @@ macro(ut_create_module)
 		  LIBRARY DESTINATION ${UBITRACK_COMPONENT_INSTALL_PATH} COMPONENT main
 		  ARCHIVE DESTINATION ${UBITRACK_COMPONENT_INSTALL_PATH} COMPONENT main
 		  )
-		MESSAGE(STATUS "${the_module} component: ${fname} configured.")
 
 	  endforeach()
-
-		# TBD !!
-		# only "public" headers need to be installed
-		#if(UBITRACK_MODULE_${the_module}_HEADERS AND ";${UBITRACK_MODULES_PUBLIC};" MATCHES ";${the_module};")
-		#  foreach(hdr ${UBITRACK_MODULE_${the_module}_HEADERS})
-		#    string(REGEX REPLACE "^.*ubitrack2/" "ubitrack2/" hdr2 "${hdr}")
-		#    if(hdr2 MATCHES "^(ubitrack2/.*)[^/]+.h(..)?$" AND NOT hdr2 MATCHES "ubitrack2/${the_module}/private.*")
-		#      install(FILES ${hdr} DESTINATION "${UBITRACK_INCLUDE_INSTALL_PATH}/${CMAKE_MATCH_1}" COMPONENT main)
-		#    endif()
-		#  endforeach()
-		#endif()
 	endif(UBITRACK_MODULE_${the_module}_COMPONENT_SOURCES)
 
 endmacro()
