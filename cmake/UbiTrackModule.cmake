@@ -569,7 +569,7 @@ macro(ut_create_module)
 		endif()
 
 		set_target_properties(${fname} PROPERTIES
-		  OUTPUT_NAME "${fname}${UBITRACK_DLLVERSION}"
+		  OUTPUT_NAME "${fname}"
 		  DEBUG_POSTFIX "${UBITRACK_DEBUG_POSTFIX}"
 		  ARCHIVE_OUTPUT_DIRECTORY ${UBITRACK_COMPONENT_INSTALL_PATH}
 		  LIBRARY_OUTPUT_DIRECTORY ${UBITRACK_COMPONENT_INSTALL_PATH}
@@ -578,14 +578,14 @@ macro(ut_create_module)
 		)
 
 		# For dynamic link numbering convenions
-		if(NOT ANDROID)
-		  # Android SDK build scripts can include only .so files into final .apk
-		  # As result we should not set version properties for Android
-		  set_target_properties(${fname} PROPERTIES
-		    VERSION ${UBITRACK_LIBVERSION}
-		    SOVERSION ${UBITRACK_SOVERSION}
-		  )
-		endif()
+		#if(NOT ANDROID)
+		#  # Android SDK build scripts can include only .so files into final .apk
+		#  # As result we should not set version properties for Android
+		#  set_target_properties(${fname} PROPERTIES
+		#    VERSION ${UBITRACK_LIBVERSION}
+		#    SOVERSION ${UBITRACK_SOVERSION}
+		#  )
+		#endif()
 
 		if(BUILD_SHARED_LIBS)
 		  if(MSVC)
