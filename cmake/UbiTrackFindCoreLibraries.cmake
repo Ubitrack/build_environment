@@ -84,6 +84,16 @@ IF(Freeglut_FOUND)
   MESSAGE(STATUS "Found Freeglut: ${Freeglut_INCLUDE_DIR} - ${Freeglut_LIBRARIES}")
 ENDIF(Freeglut_FOUND)
 
+SET(HAVE_JAVA 0)
+find_package(JNI)
+IF(JNI_FOUND)
+  add_definitions(-DHAVE_JAVA)
+  SET(HAVE_JAVA 1)
+  MESSAGE(STATUS "Found JAVA: ${JNI_INCLUDE_DIRS} - ${JNI_LIBRARIES}")
+ENDIF(JNI_FOUND)
+
+
+
 SET(HAVE_SWIG 0)
 find_package(SWIG)
 IF(SWIG_FOUND)
