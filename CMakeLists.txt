@@ -117,8 +117,9 @@ SET(UBITRACK_LIBVERSION "${UBITRACK_VERSION_MAJOR}.${UBITRACK_VERSION_MINOR}.${U
 # Should be an option ..
 SET(BUILD_SHARED_LIBS ON)
 SET(BUILD_UTCONSOLE ON)
-SET(BUILD_UTPYTHON ON)
+SET(BUILD_UTPYTHON OFF)
 SET(BUILD_UTJAVA ON)
+SET(BUILD_UTCWRAPPER OFF)
 
 # ----------------------------------------------------------------------------
 #  Build & install layouts
