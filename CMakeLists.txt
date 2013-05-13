@@ -115,11 +115,10 @@ SET(UBITRACK_SOVERSION "${UBITRACK_VERSION_MAJOR}.${UBITRACK_VERSION_MINOR}")
 SET(UBITRACK_LIBVERSION "${UBITRACK_VERSION_MAJOR}.${UBITRACK_VERSION_MINOR}.${UBITRACK_VERSION_PATCH}")
 
 # Should be an option ..
-SET(BUILD_SHARED_LIBS ON)
-SET(BUILD_UTCONSOLE ON)
-SET(BUILD_UTPYTHON OFF)
-SET(BUILD_UTJAVA ON)
-SET(BUILD_UTCWRAPPER OFF)
+OPTION(BUILD_SHARED_LIBS "Build Shared Libraries" ON)
+OPTION(BUILD_UTCONSOLE "Build utConsole application" ON)
+OPTION(BUILD_UTPYTHON "Build Ubitrack Python Wrappers" OFF)
+OPTION(BUILD_UTJAVA "Build Ubitrack Java Wrappers" ON)
 
 # ----------------------------------------------------------------------------
 #  Build & install layouts
