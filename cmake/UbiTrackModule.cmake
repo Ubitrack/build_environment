@@ -551,9 +551,16 @@ macro(ut_create_module)
 	  if(UBITRACK_MODULE_${the_module}_HEADERS AND ";${UBITRACK_MODULES_PUBLIC};" MATCHES ";${the_module};")
 	    foreach(hdr ${UBITRACK_MODULE_${the_module}_HEADERS})
 	      string(REGEX REPLACE "^.*modules/.*/src/" "" hdr2 "${hdr}")
-	      install(FILES ${hdr} DESTINATION "${UBITRACK_INCLUDE_INSTALL_PATH}/${hdr2}" COMPONENT main)
+              GET_FILENAME_COMPONENT(fpath ${hdr2} PATH)
+              #MESSAGE(STATUS "${UBITRACK_INCLUDE_INSTALL_PATH}/${fpath}")
+              IF(fpath)
+	        install(FILES ${hdr} DESTINATION "${UBITRACK_INCLUDE_INSTALL_PATH}/${fpath}" COMPONENT main)
+              ELSE(fpath)
+                install(FILES ${hdr} DESTINATION "${UBITRACK_INCLUDE_INSTALL_PATH}" COMPONENT main)
+              ENDIF(fpath)
 	    endforeach()
 	  endif()
+
   endif(UBITRACK_MODULE_${the_module}_SOURCES)
 
   if(UBITRACK_MODULE_${the_module}_COMPONENT_SOURCES)
@@ -610,6 +617,22 @@ macro(ut_create_module)
 
 	  endforeach()
 	endif(UBITRACK_MODULE_${the_module}_COMPONENT_SOURCES)
+
+
+	# collect all utql patterns from module for installation
+    file(GLOB _utql_patterns "doc/utql/*.xml" "doc/utql/*/*.xml"  "doc/utql/*/*/*.xml")
+    foreach(pfile ${_utql_patterns})
+      string(REGEX REPLACE "^.*/doc/utql/" "" pfile2 "${pfile}")
+      GET_FILENAME_COMPONENT(fpath ${pfile2} PATH)
+      IF(fpath)
+    	install(FILES ${pfile} DESTINATION "${UBITRACK_UTQLPATTERN_INSTALL_DIRECTORY}/${fpath}" COMPONENT main)
+      ELSE(fpath)
+        install(FILES ${pfile} DESTINATION "${UBITRACK_UTQLPATTERN_INSTALL_DIRECTORY}" COMPONENT main)
+      ENDIF(fpath)
+    endforeach()
+
+
+
 
 endmacro()
 
