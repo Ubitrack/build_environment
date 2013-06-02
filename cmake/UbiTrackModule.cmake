@@ -1,6 +1,5 @@
 # Adapted from OpenCV CMake Infrastructure, git repository 05/2013
 # by Ulrich Eck
-# Needs refactoring / simplification / replacement ..
 
 # Local variables (set for each module):
 #
@@ -329,9 +328,17 @@ macro(ut_glob_modules)
   # create modules
   set(UBITRACK_INITIAL_PASS OFF PARENT_SCOPE)
   set(UBITRACK_INITIAL_PASS OFF)
+  
   foreach(m ${UBITRACK_MODULES_BUILD})
       add_subdirectory("${UBITRACK_MODULE_${m}_LOCATION}" "${CMAKE_CURRENT_BINARY_DIR}/${m}")
   endforeach()
+  foreach(m ${UBITRACK_COMPONENTS_BUILD})
+      add_subdirectory("${UBITRACK_COMPONENT_${m}_LOCATION}" "${CMAKE_CURRENT_BINARY_DIR}/${m}")
+  endforeach()
+  foreach(m ${UBITRACK_APPS_BUILD})
+      add_subdirectory("${UBITRACK_APP_${m}_LOCATION}" "${CMAKE_CURRENT_BINARY_DIR}/${m}")
+  endforeach()
+
   unset(__shortname)
 endmacro()
 
@@ -341,7 +348,13 @@ macro(ut_include_modules)
     if(HAVE_${d})
       if (EXISTS "${UBITRACK_MODULE_${d}_LOCATION}/src")
         ut_include_directories("${UBITRACK_MODULE_${d}_LOCATION}/src")
+      elseif (EXISTS "${UBITRACK_MODULES_PATH}/${d}/src")
+        ut_include_directories("${UBITRACK_MODULES_PATH}/${d}/src")
+  	  else()
+	    MESSAGE(STATUS "MISSING MODULE_INCLUDE: ${d} - ${UBITRACK_MODULE_${d}_LOCATION}")
       endif()
+    elseif (EXISTS "${UBITRACK_MODULES_PATH}/${d}/src")
+      ut_include_directories("${UBITRACK_MODULES_PATH}/${d}/src")
     elseif(EXISTS "${d}")
       ut_include_directories("${d}")
     endif()
@@ -430,195 +443,86 @@ macro(ut_glob_module_sources)
   source_group("Include" FILES ${lib_hdrs})
 endmacro()
 
-# sets header and source files for the a component build (one library per cpp file)
-# NB: all files specified as headers will be installed
-# Usage:
-# ut_set_component_sources([HEADERS] <list of files> [SOURCES] <list of files>)
-macro(ut_set_component_sources)
-  set(UBITRACK_MODULE_${the_module}_COMPONENT_HEADERS "")
-  set(UBITRACK_MODULE_${the_module}_COMPONENT_SOURCES "")
-
-  foreach(f "HEADERS" ${ARGN})
-	if(f STREQUAL "HEADERS" OR f STREQUAL "SOURCES")
-      set(__filesvar "UBITRACK_MODULE_${the_module}_COMPONENT_${f}")
-    else()
-      list(APPEND ${__filesvar} "${f}")
-    endif()
-  endforeach()
-
-  # the hacky way to embeed any files into the UbiTrack without modification of its build system
-  if(COMMAND ut_get_module_external_component_sources)
-    ut_get_module_external_component_sources()
-  endif()
-
-  # use full paths for module to be independent from the module location
-  ut_convert_to_full_paths(UBITRACK_MODULE_${the_module}_COMPONENT_HEADERS)
-
-  set(UBITRACK_MODULE_${the_module}_COMPONENT_HEADERS ${UBITRACK_MODULE_${the_module}_COMPONENT_HEADERS} CACHE INTERNAL "List of header files for ${the_module} components")
-  set(UBITRACK_MODULE_${the_module}_SCOMPONENT_OURCES ${UBITRACK_MODULE_${the_module}_COMPONENT_SOURCES} CACHE INTERNAL "List of source files for ${the_module} components")
-endmacro()
-
-# finds and sets headers and sources for the standard UbiTrack module
-# Usage:
-# ut_glob_module_sources(<extra sources&headers in the same format as used in ut_set_module_sources>)
-macro(ut_glob_component_sources)
-  set(UBITRACK_MODULE_${the_module}_GLOB_COMPONENT_HEADERS "")
-  set(UBITRACK_MODULE_${the_module}_GLOB_COMPONENT_SOURCES "")
-
-  foreach(f "HEADERS" ${ARGN})
-	if(f STREQUAL "HEADERS" OR f STREQUAL "SOURCES")
-      set(__filesvar "UBITRACK_MODULE_${the_module}_GLOB_COMPONENT_${f}")
-    else()
-      list(APPEND ${__filesvar} "${f}")
-    endif()
-  endforeach()
-	
-	
-  file(GLOB lib_srcs ${UBITRACK_MODULE_${the_module}_GLOB_COMPONENT_SOURCES})
-  file(GLOB lib_hdrs ${UBITRACK_MODULE_${the_module}_GLOB_COMPONENT_HEADERS})
-  ut_set_component_sources(HEADERS ${lib_hdrs}
-                           SOURCES ${lib_srcs})
-
-  source_group("Src" FILES ${lib_srcs})
-  source_group("Include" FILES ${lib_hdrs})
-endmacro()
-
 # creates UbiTrack module in current folder
 # creates new target, configures standard dependencies, compilers flags, install rules
 # Usage:
 #   ut_create_module(<extra link dependencies>)
 #   ut_create_module(SKIP_LINK)
 macro(ut_create_module)
-  if(UBITRACK_MODULE_${the_module}_SOURCES)
-	  add_library(${the_module} ${UBITRACK_MODULE_TYPE} ${UBITRACK_MODULE_${the_module}_HEADERS} ${UBITRACK_MODULE_${the_module}_SOURCES})
-	  #set_target_properties(${the_module} PROPERTIES COMPILE_DEFINITIONS UBITRACK_NOSTL)
+	add_library(${the_module} ${UBITRACK_MODULE_TYPE} ${UBITRACK_MODULE_${the_module}_HEADERS} ${UBITRACK_MODULE_${the_module}_SOURCES})
+	#set_target_properties(${the_module} PROPERTIES COMPILE_DEFINITIONS UBITRACK_NOSTL)
 
-	  if(NOT "${ARGN}" STREQUAL "SKIP_LINK")
-		#MESSAGE(STATUS "${the_module} ${UBITRACK_MODULE_${the_module}_DEPS} ${UBITRACK_MODULE_${the_module}_DEPS_EXT} ${UBITRACK_LINKER_LIBS} ${IPP_LIBS} ${ARGN}")
-	    target_link_libraries(${the_module} ${UBITRACK_MODULE_${the_module}_DEPS} ${UBITRACK_MODULE_${the_module}_DEPS_EXT} ${UBITRACK_LINKER_LIBS} ${IPP_LIBS} ${ARGN})
+	if(NOT "${ARGN}" STREQUAL "SKIP_LINK")
+	#MESSAGE(STATUS "${the_module} ${UBITRACK_MODULE_${the_module}_DEPS} ${UBITRACK_MODULE_${the_module}_DEPS_EXT} ${UBITRACK_LINKER_LIBS} ${IPP_LIBS} ${ARGN}")
+	  target_link_libraries(${the_module} ${UBITRACK_MODULE_${the_module}_DEPS} ${UBITRACK_MODULE_${the_module}_DEPS_EXT} ${UBITRACK_LINKER_LIBS} ${IPP_LIBS} ${ARGN})
 
-	    #if (HAVE_CUDA)
-	    #  target_link_libraries(${the_module} ${CUDA_LIBRARIES} ${CUDA_npp_LIBRARY})
-	    #endif()
-	    #if(HAVE_OPENCL AND OPENCL_LIBRARIES)
-	    #  target_link_libraries(${the_module} ${OPENCL_LIBRARIES})
-	    #endif()
-	  endif()
+	  #if (HAVE_CUDA)
+	  #  target_link_libraries(${the_module} ${CUDA_LIBRARIES} ${CUDA_npp_LIBRARY})
+	  #endif()
+	  #if(HAVE_OPENCL AND OPENCL_LIBRARIES)
+	  #  target_link_libraries(${the_module} ${OPENCL_LIBRARIES})
+	  #endif()
+	endif()
 
-	  add_dependencies(ubitrack_modules ${the_module})
+	add_dependencies(ubitrack_modules ${the_module})
 
+	set_target_properties(${the_module} PROPERTIES
+	  OUTPUT_NAME "${the_module}${UBITRACK_DLLVERSION}"
+	  DEBUG_POSTFIX "${UBITRACK_DEBUG_POSTFIX}"
+	  ARCHIVE_OUTPUT_DIRECTORY ${LIBRARY_OUTPUT_PATH}
+	  LIBRARY_OUTPUT_DIRECTORY ${LIBRARY_OUTPUT_PATH}
+	  RUNTIME_OUTPUT_DIRECTORY ${EXECUTABLE_OUTPUT_PATH}
+	  INSTALL_NAME_DIR lib
+	)
+
+	# For dynamic link numbering convenions
+	if(NOT ANDROID)
+	  # Android SDK build scripts can include only .so files into final .apk
+	  # As result we should not set version properties for Android
 	  set_target_properties(${the_module} PROPERTIES
-	    OUTPUT_NAME "${the_module}${UBITRACK_DLLVERSION}"
-	    DEBUG_POSTFIX "${UBITRACK_DEBUG_POSTFIX}"
-	    ARCHIVE_OUTPUT_DIRECTORY ${LIBRARY_OUTPUT_PATH}
-	    LIBRARY_OUTPUT_DIRECTORY ${LIBRARY_OUTPUT_PATH}
-	    RUNTIME_OUTPUT_DIRECTORY ${EXECUTABLE_OUTPUT_PATH}
-	    INSTALL_NAME_DIR lib
+	    VERSION ${UBITRACK_LIBVERSION}
+	    SOVERSION ${UBITRACK_SOVERSION}
+	  )
+	endif()
+
+	if(BUILD_SHARED_LIBS)
+	  if(MSVC)
+	    set_target_properties(${the_module} PROPERTIES DEFINE_SYMBOL UBITRACK_DLL)
+	  else()
+	    #add_definitions(-DUBITRACK_DLL)
+	  endif()
+	endif()
+
+	if(MSVC)
+	  if(CMAKE_CROSSCOMPILING)
+	    set_target_properties(${the_module} PROPERTIES LINK_FLAGS "/NODEFAULTLIB:secchk")
+	  endif()
+	  set_target_properties(${the_module} PROPERTIES LINK_FLAGS "/NODEFAULTLIB:libc /DEBUG")
+	endif()
+
+	install(TARGETS ${the_module}
+	  RUNTIME DESTINATION bin COMPONENT main
+	  LIBRARY DESTINATION ${UBITRACK_LIB_INSTALL_PATH} COMPONENT main
+	  ARCHIVE DESTINATION ${UBITRACK_LIB_INSTALL_PATH} COMPONENT main
 	  )
 
-	  # For dynamic link numbering convenions
-	  if(NOT ANDROID)
-	    # Android SDK build scripts can include only .so files into final .apk
-	    # As result we should not set version properties for Android
-	    set_target_properties(${the_module} PROPERTIES
-	      VERSION ${UBITRACK_LIBVERSION}
-	      SOVERSION ${UBITRACK_SOVERSION}
-	    )
-	  endif()
-
-	  if(BUILD_SHARED_LIBS)
-	    if(MSVC)
-	      set_target_properties(${the_module} PROPERTIES DEFINE_SYMBOL UBITRACK_DLL)
-	    else()
-	      #add_definitions(-DUBITRACK_DLL)
-	    endif()
-	  endif()
-
-	  if(MSVC)
-	    if(CMAKE_CROSSCOMPILING)
-	      set_target_properties(${the_module} PROPERTIES LINK_FLAGS "/NODEFAULTLIB:secchk")
-	    endif()
-	    set_target_properties(${the_module} PROPERTIES LINK_FLAGS "/NODEFAULTLIB:libc /DEBUG")
-	  endif()
-
-	  install(TARGETS ${the_module}
-	    RUNTIME DESTINATION bin COMPONENT main
-	    LIBRARY DESTINATION ${UBITRACK_LIB_INSTALL_PATH} COMPONENT main
-	    ARCHIVE DESTINATION ${UBITRACK_LIB_INSTALL_PATH} COMPONENT main
-	    )
-
-	  # only "public" headers need to be installed
-	  if(UBITRACK_MODULE_${the_module}_HEADERS AND ";${UBITRACK_MODULES_PUBLIC};" MATCHES ";${the_module};")
-	    foreach(hdr ${UBITRACK_MODULE_${the_module}_HEADERS})
-	      string(REGEX REPLACE "^.*modules/.*/src/" "" hdr2 "${hdr}")
-              GET_FILENAME_COMPONENT(fpath ${hdr2} PATH)
-              #MESSAGE(STATUS "${UBITRACK_INCLUDE_INSTALL_PATH}/${fpath}")
-              IF(fpath)
-	        install(FILES ${hdr} DESTINATION "${UBITRACK_INCLUDE_INSTALL_PATH}/${fpath}" COMPONENT main)
-              ELSE(fpath)
-                install(FILES ${hdr} DESTINATION "${UBITRACK_INCLUDE_INSTALL_PATH}" COMPONENT main)
-              ENDIF(fpath)
-	    endforeach()
-	  endif()
-
-  endif(UBITRACK_MODULE_${the_module}_SOURCES)
-
-  if(UBITRACK_MODULE_${the_module}_COMPONENT_SOURCES)
-	  foreach(fpath ${UBITRACK_MODULE_${the_module}_COMPONENT_SOURCES})
-		GET_FILENAME_COMPONENT(fname ${fpath} NAME_WE)
-
-		add_library(${fname} ${UBITRACK_MODULE_TYPE} ${UBITRACK_MODULE_${the_module}_COMPONENT_HEADERS} ${fpath})
-		#set_target_properties(${the_module} PROPERTIES COMPILE_DEFINITIONS UBITRACK_NOSTL)
-
-		if(NOT "${ARGN}" STREQUAL "SKIP_LINK")
-			#MESSAGE(STATUS "${the_module} ${UBITRACK_MODULE_${the_module}_DEPS} ${UBITRACK_MODULE_${the_module}_DEPS_EXT} ${UBITRACK_LINKER_LIBS} ${IPP_LIBS} ${ARGN}")
-		  target_link_libraries(${fname} ${UBITRACK_MODULE_${the_module}_DEPS} ${UBITRACK_MODULE_${the_module}_DEPS_EXT} ${UBITRACK_LINKER_LIBS} ${IPP_LIBS} ${ARGN})
-		endif()
-
-		set_target_properties(${fname} PROPERTIES
-		  OUTPUT_NAME "${fname}"
-		  DEBUG_POSTFIX "${UBITRACK_DEBUG_POSTFIX}"
-		  ARCHIVE_OUTPUT_DIRECTORY ${UBITRACK_COMPONENT_INSTALL_PATH}
-		  LIBRARY_OUTPUT_DIRECTORY ${UBITRACK_COMPONENT_INSTALL_PATH}
-		  RUNTIME_OUTPUT_DIRECTORY ${EXECUTABLE_OUTPUT_PATH}
-		  INSTALL_NAME_DIR lib
-		)
-
-		# For dynamic link numbering convenions
-		#if(NOT ANDROID)
-		#  # Android SDK build scripts can include only .so files into final .apk
-		#  # As result we should not set version properties for Android
-		#  set_target_properties(${fname} PROPERTIES
-		#    VERSION ${UBITRACK_LIBVERSION}
-		#    SOVERSION ${UBITRACK_SOVERSION}
-		#  )
-		#endif()
-
-		if(BUILD_SHARED_LIBS)
-		  if(MSVC)
-		    set_target_properties(${fname} PROPERTIES DEFINE_SYMBOL UBITRACK_DLL)
-		  else()
-		    #add_definitions(-DUBITRACK_DLL)
-		  endif()
-		endif()
-
-		if(MSVC)
-		  if(CMAKE_CROSSCOMPILING)
-		    set_target_properties(${fname} PROPERTIES LINK_FLAGS "/NODEFAULTLIB:secchk")
-		  endif()
-		  set_target_properties(${fname} PROPERTIES LINK_FLAGS "/NODEFAULTLIB:libc /DEBUG")
-		endif()
-
-		install(TARGETS ${fname}
-		  RUNTIME DESTINATION bin COMPONENT main
-		  LIBRARY DESTINATION ${UBITRACK_COMPONENT_INSTALL_PATH} COMPONENT main
-		  ARCHIVE DESTINATION ${UBITRACK_COMPONENT_INSTALL_PATH} COMPONENT main
-		  )
-
+	# only "public" headers need to be installed
+	if(UBITRACK_MODULE_${the_module}_HEADERS AND ";${UBITRACK_MODULES_PUBLIC};" MATCHES ";${the_module};")
+	  foreach(hdr ${UBITRACK_MODULE_${the_module}_HEADERS})
+	    string(REGEX REPLACE "^.*modules/.*/src/" "" hdr2 "${hdr}")
+	           GET_FILENAME_COMPONENT(fpath ${hdr2} PATH)
+	           #MESSAGE(STATUS "${UBITRACK_INCLUDE_INSTALL_PATH}/${fpath}")
+	           IF(fpath)
+	      install(FILES ${hdr} DESTINATION "${UBITRACK_INCLUDE_INSTALL_PATH}/${fpath}" COMPONENT main)
+	           ELSE(fpath)
+	             install(FILES ${hdr} DESTINATION "${UBITRACK_INCLUDE_INSTALL_PATH}" COMPONENT main)
+	           ENDIF(fpath)
 	  endforeach()
-	endif(UBITRACK_MODULE_${the_module}_COMPONENT_SOURCES)
+	endif()
 
+endmacro()
 
+macro(ut_install_utql_patterns)
 	# collect all utql patterns from module for installation
     file(GLOB _utql_patterns "doc/utql/*.xml" "doc/utql/*/*.xml"  "doc/utql/*/*/*.xml")
     foreach(pfile ${_utql_patterns})
@@ -630,12 +534,7 @@ macro(ut_create_module)
         install(FILES ${pfile} DESTINATION "${UBITRACK_UTQLPATTERN_INSTALL_DIRECTORY}" COMPONENT main)
       ENDIF(fpath)
     endforeach()
-
-
-
-
 endmacro()
-
 
 # short command for adding simple UbiTrack module
 # see ut_add_module for argument details

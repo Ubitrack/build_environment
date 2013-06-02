@@ -183,6 +183,12 @@ endif()
 # Include Module Functions
 include(cmake/UbiTrackModule.cmake)
 
+# Include Component Functions
+include(cmake/UbiTrackComponent.cmake)
+
+# Include App Functions
+include(cmake/UbiTrackApp.cmake)
+
 # --- Python Support ---
 include(cmake/UbiTrackDetectPython.cmake)
 
@@ -239,4 +245,12 @@ ut_track_build_dependencies()
 #Status
 foreach(m ${UBITRACK_MODULES_BUILD})
 	MESSAGE(STATUS "Configured Module: ${m}")
+endforeach()
+
+foreach(m ${UBITRACK_COMPONENTS_BUILD})
+	MESSAGE(STATUS "Configured Component: ${m}")
+endforeach()
+
+foreach(m ${UBITRACK_APPS_BUILD})
+	MESSAGE(STATUS "Configured App: ${m}")
 endforeach()
