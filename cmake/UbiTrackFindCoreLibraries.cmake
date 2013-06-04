@@ -20,7 +20,9 @@ set(HAVE_LOG4CPP 1)
 
 # always use supplied boost bindings
 set(BOOSTBINDINGS_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/modules/utcore/3rd/boost-bindings")
-add_definitions("-DBOOST_UBLAS_BOUNDED_ARRAY_ALIGN=__attribute__ ((aligned (16)))")
+IF(CMAKE_COMPILER_IS_GNUCXX)
+  add_definitions("-DBOOST_UBLAS_BOUNDED_ARRAY_ALIGN=__attribute__ ((aligned (16)))")
+ENDIF(CMAKE_COMPILER_IS_GNUCXX)
 add_definitions(-DBOOST_SPIRIT_USE_OLD_NAMESPACE)
 set(HAVE_BOOSTBINDINGS 1)
 
