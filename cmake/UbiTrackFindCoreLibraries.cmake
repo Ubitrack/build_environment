@@ -41,7 +41,28 @@ endif(Boost_FOUND)
 
 # Find Lapack library. Required to compile.
 SET(HAVE_LAPACK 0)
-FIND_PACKAGE(LAPACK REQUIRED)
+IF(WIN32)
+	FIND_PACKAGE(LAPACK)
+	IF(NOT LAPACK_FOUND)
+		# use 3rdparty libraries
+		IF(X86_64)
+			SET(LAPACK_LIB_DIR "${CMAKE_SOURCE_DIR}/modules/utcore/3rd/lapack/win64")
+		ELSE()
+			SET(LAPACK_LIB_DIR "${CMAKE_SOURCE_DIR}/modules/utcore/3rd/lapack/win32")
+		ENDIF(X86_64)
+		# for now just manually define the libraries ..
+		SET(LAPACK_LIBRARIES "${LAPACK_LIB_DIR}/atlas.lib" 
+							 "${LAPACK_LIB_DIR}/cblas.lib" 
+							 "${LAPACK_LIB_DIR}/f77blas.lib"
+							 "${LAPACK_LIB_DIR}/g2c.lib"
+							 "${LAPACK_LIB_DIR}/gcc.lib"
+							 "${LAPACK_LIB_DIR}/lapack.lib"
+							 )
+		SET(LAPACK_FOUND 1)
+	ENDIF(NOT LAPACK_FOUND)
+ELSE()
+	FIND_PACKAGE(LAPACK REQUIRED)
+ENDIF(WIN32)
 IF(LAPACK_FOUND)
   add_definitions(-DHAVE_LAPACK)
   SET(HAVE_LAPACK 1)

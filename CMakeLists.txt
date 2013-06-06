@@ -116,9 +116,10 @@ SET(UBITRACK_LIBVERSION "${UBITRACK_VERSION_MAJOR}.${UBITRACK_VERSION_MINOR}.${U
 
 # Should be an option ..
 OPTION(BUILD_SHARED_LIBS "Build Shared Libraries" ON)
-OPTION(BUILD_UTCONSOLE "Build utConsole application" ON)
-OPTION(BUILD_UTPYTHON "Build Ubitrack Python Wrappers" OFF)
-OPTION(BUILD_UTJAVA "Build Ubitrack Java Wrappers" ON)
+
+IF(WIN32)
+  add_definitions("-DUBITRACK_DLL")
+ENDIF(WIN32)
 
 # ----------------------------------------------------------------------------
 #  Build & install layouts
