@@ -29,6 +29,10 @@ set(HAVE_BOOSTBINDINGS 1)
 
 # Find Boost library. Required to compile.
 SET(HAVE_BOOST 0)
+if(MSVC)
+  # force dynamic linking of boost libs on windows ..
+  add_definitions(-DBOOST_ALL_DYN_LINK)
+endif(MSVC)
 set(Boost_USE_STATIC_LIBS   OFF)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)

@@ -117,10 +117,6 @@ SET(UBITRACK_LIBVERSION "${UBITRACK_VERSION_MAJOR}.${UBITRACK_VERSION_MINOR}.${U
 # Should be an option ..
 OPTION(BUILD_SHARED_LIBS "Build Shared Libraries" ON)
 
-IF(WIN32)
-  add_definitions("-DUBITRACK_DLL")
-ENDIF(WIN32)
-
 # ----------------------------------------------------------------------------
 #  Build & install layouts
 # ----------------------------------------------------------------------------
@@ -215,6 +211,7 @@ endif()
 if(APPLE)
 	set(CMAKE_XCODE_ATTRIBUTE_GCC_VERSION "com.apple.compilers.llvmgcc42")
 endif(APPLE)
+
 
 # add 3rdparty libraries
 include(cmake/UbiTrackFindCoreLibraries.cmake)

@@ -487,9 +487,9 @@ macro(ut_create_module)
 
 	if(BUILD_SHARED_LIBS)
 	  if(MSVC)
-	    set_target_properties(${the_module} PROPERTIES DEFINE_SYMBOL UBITRACK_DLL)
-	  else()
-	    #add_definitions(-DUBITRACK_DLL)
+	    string(TOUPPER "${the_module}" the_module_upper)
+	    #set_target_properties(${the_module} PROPERTIES DEFINE_SYMBOL "${the_module_upper}_DLL")
+	    add_definitions( "-D${the_module_upper}_DLL")
 	  endif()
 	endif()
 
@@ -498,7 +498,14 @@ macro(ut_create_module)
 	    set_target_properties(${the_module} PROPERTIES LINK_FLAGS "/NODEFAULTLIB:secchk")
 	  endif()
 	  set_target_properties(${the_module} PROPERTIES LINK_FLAGS "/NODEFAULTLIB:libc /DEBUG")
-	endif()
+	  ## taken from scons build 
+	  set_target_properties(${the_module} PROPERTIES COMPILE_FLAGS "/EHsc /c /W3 /GR /wd4355 /wd4996 /wd4251 /wd4275 /wd4819 /wd4290")
+	  set_target_properties(${the_module} PROPERTIES LINK_FLAGS "/SUBSYSTEM:CONSOLE")
+	  set_target_properties(${the_module} PROPERTIES DEFINE_SYMBOL WIN32)
+	  set_target_properties(${the_module} PROPERTIES DEFINE_SYMBOL _MBCS)
+	  set_target_properties(${the_module} PROPERTIES DEFINE_SYMBOL _WIN32_WINNT=0x501)
+	  
+	  endif()
 
 	install(TARGETS ${the_module}
 	  RUNTIME DESTINATION bin COMPONENT main
