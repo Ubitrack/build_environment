@@ -498,14 +498,13 @@ macro(ut_create_module)
 	    set_target_properties(${the_module} PROPERTIES LINK_FLAGS "/NODEFAULTLIB:secchk")
 	  endif()
 	  set_target_properties(${the_module} PROPERTIES LINK_FLAGS "/NODEFAULTLIB:libc /DEBUG")
-	  ## taken from scons build 
-	  set_target_properties(${the_module} PROPERTIES COMPILE_FLAGS "/EHsc /c /W3 /GR /wd4355 /wd4996 /wd4251 /wd4275 /wd4819 /wd4290")
-	  set_target_properties(${the_module} PROPERTIES LINK_FLAGS "/SUBSYSTEM:CONSOLE")
-	  set_target_properties(${the_module} PROPERTIES DEFINE_SYMBOL WIN32)
-	  set_target_properties(${the_module} PROPERTIES DEFINE_SYMBOL _MBCS)
-	  set_target_properties(${the_module} PROPERTIES DEFINE_SYMBOL _WIN32_WINNT=0x501)
-	  
-	  endif()
+
+	  set_target_properties(${the_module} PROPERTIES COMPILE_FLAGS "${UBITRACK_COMPILE_FLAGS}")
+	  set_target_properties(${the_module} PROPERTIES LINK_FLAGS "${UBITRACK_LINK_FLAGS}")
+	  foreach(_symb ${UBITRACK_DEFINES})
+		  set_target_properties(${the_module} PROPERTIES DEFINE_SYMBOL ${_symb})
+	  endforeach()
+    endif()
 
 	install(TARGETS ${the_module}
 	  RUNTIME DESTINATION bin COMPONENT main

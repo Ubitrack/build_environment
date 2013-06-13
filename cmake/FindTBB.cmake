@@ -305,8 +305,6 @@ if (TBB_INCLUDE_DIR)
 			LIST(APPEND TBB_ALL_LIBRARIES ${TBB_MALLOC_LIBRARY})
 		endif (${__HAVE_TBB_MALLOC_LIBRARY} AND ${__HAVE_TBB_MALLOC_LIBRARY_DEBUG})
 		
-		MESSAGE(STATUS "TBB_ALL_LIBRARIES: ${TBB_ALL_LIBRARIES}")
-
         set (TBB_INCLUDE_DIRS ${TBB_INCLUDE_DIR} CACHE PATH "TBB include directory" FORCE)
         set (TBB_LIBRARY_DIRS ${TBB_LIBRARY_DIR} CACHE PATH "TBB library directory" FORCE)
         # Jiri: Self-built TBB stores the debug libraries in a separate directory.

@@ -96,6 +96,11 @@ if(UNIX AND NOT ANDROID)
   endif()
 endif()
 
+if(WIN32)
+	  set(UBITRACK_COMPILE_FLAGS "/EHsc /c /W3 /GR /wd4355 /wd4996 /wd4251 /wd4275 /wd4819 /wd4290")
+	  set(UBITRACK_LINK_FLAGS "/SUBSYSTEM:CONSOLE")
+	  set(UBITRACK_DEFINES "WIN32" "_MBCS" "_WIN32_WINNT=0x501")	
+endif(WIN32)
 
 # Option to use Macports ??
 if(APPLE)

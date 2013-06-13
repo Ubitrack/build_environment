@@ -206,11 +206,11 @@ macro(ut_create_multi_component)
 
 		if(BUILD_SHARED_LIBS)
 		  if(MSVC)
-			set_target_properties(${fname} PROPERTIES COMPILE_FLAGS "/EHsc /c /W3 /GR /wd4355 /wd4996 /wd4251 /wd4275 /wd4819 /wd4290")
-			set_target_properties(${fname} PROPERTIES LINK_FLAGS "/SUBSYSTEM:CONSOLE")
-			set_target_properties(${fname} PROPERTIES DEFINE_SYMBOL WIN32)
-			set_target_properties(${fname} PROPERTIES DEFINE_SYMBOL _MBCS)
-			set_target_properties(${fname} PROPERTIES DEFINE_SYMBOL _WIN32_WINNT=0x501)
+			  set_target_properties(${fname} PROPERTIES COMPILE_FLAGS "${UBITRACK_COMPILE_FLAGS}")
+			  set_target_properties(${fname} PROPERTIES LINK_FLAGS "${UBITRACK_LINK_FLAGS}")
+			  foreach(_symb ${UBITRACK_DEFINES})
+				  set_target_properties(${fname} PROPERTIES DEFINE_SYMBOL ${_symb})
+			  endforeach()
 		  endif()
 		endif()
 
@@ -222,7 +222,7 @@ macro(ut_create_multi_component)
 		endif()
 
 		install(TARGETS ${fname}
-		  RUNTIME DESTINATION bin COMPONENT main
+		  RUNTIME DESTINATION ${UBITRACK_COMPONENT_INSTALL_PATH} COMPONENT main
 		  LIBRARY DESTINATION ${UBITRACK_COMPONENT_INSTALL_PATH} COMPONENT main
 		  ARCHIVE DESTINATION ${UBITRACK_COMPONENT_INSTALL_PATH} COMPONENT main
 		  )
@@ -262,11 +262,11 @@ macro(ut_create_single_component)
 
 	if(BUILD_SHARED_LIBS)
 	  if(MSVC)
- 	    set_target_properties(${the_component} PROPERTIES COMPILE_FLAGS "/EHsc /c /W3 /GR /wd4355 /wd4996 /wd4251 /wd4275 /wd4819 /wd4290")
-	    set_target_properties(${the_component} PROPERTIES LINK_FLAGS "/SUBSYSTEM:CONSOLE")
-	    set_target_properties(${the_component} PROPERTIES DEFINE_SYMBOL WIN32)
-	    set_target_properties(${the_component} PROPERTIES DEFINE_SYMBOL _MBCS)
-	    set_target_properties(${the_component} PROPERTIES DEFINE_SYMBOL _WIN32_WINNT=0x501)
+		  set_target_properties(${the_component} PROPERTIES COMPILE_FLAGS "${UBITRACK_COMPILE_FLAGS}")
+		  set_target_properties(${the_component} PROPERTIES LINK_FLAGS "${UBITRACK_LINK_FLAGS}")
+		  foreach(_symb ${UBITRACK_DEFINES})
+			  set_target_properties(${the_component} PROPERTIES DEFINE_SYMBOL ${_symb})
+		  endforeach()
 	  endif()
 	endif()
 
@@ -278,7 +278,7 @@ macro(ut_create_single_component)
 	endif()
 
 	install(TARGETS ${the_component}
-	  RUNTIME DESTINATION bin COMPONENT main
+	  RUNTIME DESTINATION ${UBITRACK_COMPONENT_INSTALL_PATH} COMPONENT main
 	  LIBRARY DESTINATION ${UBITRACK_COMPONENT_INSTALL_PATH} COMPONENT main
 	  ARCHIVE DESTINATION ${UBITRACK_COMPONENT_INSTALL_PATH} COMPONENT main
 	  )
