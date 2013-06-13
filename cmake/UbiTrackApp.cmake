@@ -201,6 +201,12 @@ macro(ut_create_executable)
 	#  )
 	#endif()
 
+	set_target_properties(${the_app} PROPERTIES COMPILE_FLAGS "/EHsc /c /W3 /GR /wd4355 /wd4996 /wd4251 /wd4275 /wd4819 /wd4290")
+	set_target_properties(${the_app} PROPERTIES LINK_FLAGS "/SUBSYSTEM:CONSOLE")
+	set_target_properties(${the_app} PROPERTIES DEFINE_SYMBOL WIN32)
+	set_target_properties(${the_app} PROPERTIES DEFINE_SYMBOL _MBCS)
+	set_target_properties(${the_app} PROPERTIES DEFINE_SYMBOL _WIN32_WINNT=0x501)
+	
 	if(MSVC)
 	  if(CMAKE_CROSSCOMPILING)
 	    set_target_properties(${the_app} PROPERTIES LINK_FLAGS "/NODEFAULTLIB:secchk")
