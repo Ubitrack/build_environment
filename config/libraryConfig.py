@@ -16,6 +16,11 @@ class AbstractLibraryFinder:
 	debug_tags = []
 
 	
+
+
+
+
+	# {NameOfLibrary e.b. boost}{compile check, array [ {additional compile settings}, {include files}, {language (C++)},{library to link against (optional)}, {source code (optional)}]}{ tags within the lib names to identify debug libraries}
 	def __init__(self, libName, checkLibParameters, debug_tags = ['-d', '_d', '-gd', '_debug']):
 		self.libName = libName
 		self.checkLibParameters = checkLibParameters
@@ -121,8 +126,11 @@ class AbstractLibraryFinder:
 		cenv.Append( **self.getLibraryOptions() )
 		conf = Configure( cenv )
 		have_lib = False
+		#{additional compile settings}, {include files}, {language (C++)},{library to link against (optional)}, {source code (optional)}]
+		# just check header
 		if len(self.checkLibParameters) == 3:			
-			have_lib = conf.CheckHeader( self.checkLibParameters[1], language = self.checkLibParameters[2])			
+			have_lib = conf.CheckHeader( self.checkLibParameters[1], language = self.checkLibParameters[2])					
+		# check 
 		elif len(self.checkLibParameters) == 4:						
 			if self.checkLibParameters[1] == '':				
 				have_lib = conf.CheckLib( self.options_para['LIBS'], self.checkLibParameters[3], language = self.checkLibParameters[2],  autoadd = 0 )			
@@ -130,9 +138,9 @@ class AbstractLibraryFinder:
 				have_lib = conf.CheckLib( self.checkLibParameters[1],  self.checkLibParameters[3], language = self.checkLibParameters[2],  autoadd = 0 )
 		else:
 			if self.checkLibParameters[1] == '':				
-				have_lib = conf.CheckLibWithHeader( self.options_para['LIBS'], self.checkLibParameters[2], self.checkLibParameters[3], self.checkLibParameters[4], autoadd = 0 )
+				have_lib = conf.CheckLibWithHeader( self.options_para['LIBS'], self.checkLibParameters[1], self.checkLibParameters[2], self.checkLibParameters[4], autoadd = 0 )
 			else:
-				have_lib = conf.CheckLibWithHeader( self.checkLibParameters[1], self.checkLibParameters[2], self.checkLibParameters[3], self.checkLibParameters[4], autoadd = 0 )
+				have_lib = conf.CheckLibWithHeader( self.checkLibParameters[3], self.checkLibParameters[1], self.checkLibParameters[2], self.checkLibParameters[4], autoadd = 0 )
 		conf.Finish()
 		return have_lib
 
@@ -142,15 +150,13 @@ class AbstractLibraryFinder:
 
 class SimpleEnviromentLibraryFinder(AbstractLibraryFinder):
 	includePath=[]
-	libPath=[]
-	debug_tags = []
+	libPath=[]	
 	envExtensions = []
 	
-	def __init__(self, libName, checkLibParameters, includePath=['','include'], libPath=['lib'],  debug_tags = ['-d', '_d', '-gd', '_debug'], envExtensions={ 'x86' : [ '', '32','x86'] , 'x64' : ['', '64','x64'] }):
-		AbstractLibraryFinder.__init__(self, libName, checkLibParameters)		
+	def __init__(self, libName, checkLibParameters, includePath=['','include'], libPath=['lib'],  debug_tags = ['-d', '_d', '-gd', '_debug'], envExtensions={ 'x86' : [ '', '32','x86'] , 'x64' : ['', '64','x64'], 'android' : [''] }):
+		AbstractLibraryFinder.__init__(self, libName, checkLibParameters, debug_tags)		
 		self.includePath = includePath
-		self.libPath = libPath
-		self.debug_tags = debug_tags
+		self.libPath = libPath		
 		self.envExtensions = envExtensions[platform]
 	
 	def checkPaths(self, valueKey, rootPath, searchPaths ):
