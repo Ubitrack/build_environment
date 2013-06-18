@@ -1,0 +1,18 @@
+[submodule "modules/utcore"]
+	path = modules/utcore
+	url = git+ssh://git@arlabnavab1.informatik.tu-muenchen.de:3000/ubitrack/utcore.git
+[submodule "modules/utvision"]
+	path = modules/utvision
+	url = git+ssh://git@arlabnavab1.informatik.tu-muenchen.de:3000/ubitrack/utvision.git
+[submodule "modules/utcomponents"]
+	path = modules/utcomponents
+	url = git+ssh://git@arlabnavab1.informatik.tu-muenchen.de:3000/ubitrack/utcomponents.git
+[submodule "modules/utvisioncomponents"]
+	path = modules/utvisioncomponents
+	url = git+ssh://git@arlabnavab1.informatik.tu-muenchen.de:3000/ubitrack/utvisioncomponents.git
+[submodule "modules/utdataflow"]
+	path = modules/utdataflow
+	url = git+ssh://git@arlabnavab1.informatik.tu-muenchen.de:3000/ubitrack/utdataflow.git
+[submodule "modules/utfacade"]
+	path = modules/utfacade
+	url = git+ssh://git@arlabnavab1.informatik.tu-muenchen.de:3000/ubitrack/utfacade.git
