@@ -102,10 +102,6 @@ if(WIN32)
 	  set(UBITRACK_DEFINES "WIN32" "_MBCS" "_WIN32_WINNT=0x501")	
 endif(WIN32)
 
-if(UNIX AND NOT ANDROID)
-	set(UBITRACK_COMPILE_FLAGS "-fPIC")
-endif(UNIX AND NOT ANDROID)
-
 # Option to use Macports ??
 if(APPLE)
   list(APPEND CMAKE_LIBRARY_PATH /opt/local/lib)	

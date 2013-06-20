@@ -1,6 +1,0 @@
-[submodule "modules/artdriver"]
-	path = modules/artdriver
-	url = git+ssh://git@arlabnavab1.informatik.tu-muenchen.de:3000/ubitrackdriver/artdriver.git
-[submodule "modules/flycapture"]
-	path = modules/flycapture
-	url = git+ssh://git@arlabnavab1.informatik.tu-muenchen.de:3000/ubitrackdriver/flycapture.git
