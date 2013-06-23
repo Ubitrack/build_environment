@@ -13,18 +13,12 @@ class AbstractLibraryFinder:
 	libName = ''
 	options_para = {}
 	checkLibParameters = []
-	debug_tags = []
 
 	
-
-
-
-
 	# {NameOfLibrary e.b. boost}{compile check, array [ {additional compile settings}, {include files}, {language (C++)},{library to link against (optional)}, {source code (optional)}]}{ tags within the lib names to identify debug libraries}
-	def __init__(self, libName, checkLibParameters, debug_tags = ['-d', '_d', '-gd', '_debug']):
+	def __init__(self, libName, checkLibParameters):
 		self.libName = libName
 		self.checkLibParameters = checkLibParameters
-		self.debug_tags = debug_tags
 
 	def setIfValueExists(self, key, value):				
 		exists = True
@@ -56,7 +50,10 @@ class AbstractLibraryFinder:
 			lowername = self.libName.lower()
 
 			libEnding = ''
-			if sys.platform.startswith( 'linux' ):
+			if platform == 'android':
+				libEnding = '.a'
+				libPrefix = 'lib'				
+			elif sys.platform.startswith( 'linux' ):
 				libEnding = '.so'
 				libPrefix = 'lib'
 			else :
@@ -71,33 +68,11 @@ class AbstractLibraryFinder:
 				for fname in dirList: # check all files in libpath directory
 					# is this one of the searched libraries?
 					# starts with prefix, contains name of the library
-					if not fname.lower().startswith(libPrefix):
-						if fname.lower().find(lowername) == -1:
-							continue
+					if fname.lower().startswith(libPrefix) and fname.endswith(libEnding):
+						libs_.append(fname)
 
-					isDebugLib = False
-					for debug_tag in self.debug_tags:
-						#if fname.endswith(debug_tag+libEnding)  :
-						if fname.find(debug_tag) > 0 :
-							isDebugLib = True
-							break
-						elif (fname.endswith('d'+libEnding) and not (self.libName.endswith('d') or self.libName.endswith('D'))) or fname.endswith('dd'+libEnding)or fname.endswith('Dd'+libEnding): # is a problem for libraries ending with d
-							isDebugLib = True
-							break
+	
 
-					if fname.endswith(libEnding):
-						if isDebugLib :
-							lib_debug.append(fname)
-						else: #  for now we assume the rest are release libs
-							lib_release.append(fname)
-
-				
-				if lib_debug.count == 0: # use release libs if no debug libs are found
-					lib_debug = lib_release			
-		
-			libs_ = lib_release 
-			if configuration == 'debug':	
-				libs_ = lib_debug
 		
 		print self.libName + "    Testing .... "
 		if self.options_para.has_key('CPPPATH'):
@@ -113,9 +88,6 @@ class AbstractLibraryFinder:
 		self.options_para['HAVELIB'] = self.isLibraryAvailable()
 		if self.options_para['HAVELIB']:
 			self.options_para['CPPDEFINES'] = [ 'HAVE_'+self.libName]
-	#else:
-	#	print self.libName + "   no library path available   "
-	#	self.options_para['HAVELIB'] = False
 			
 		
 			
@@ -148,13 +120,13 @@ class AbstractLibraryFinder:
 
 
 
-class SimpleEnviromentLibraryFinder(AbstractLibraryFinder):
+class WindowsEnviromentLibraryFinder(AbstractLibraryFinder):
 	includePath=[]
 	libPath=[]	
 	envExtensions = []
 	
 	def __init__(self, libName, checkLibParameters, includePath=['','include'], libPath=['lib'],  debug_tags = ['-d', '_d', '-gd', '_debug'], envExtensions={ 'x86' : [ '', '32','x86'] , 'x64' : ['', '64','x64'], 'android' : [''] }):
-		AbstractLibraryFinder.__init__(self, libName, checkLibParameters, debug_tags)		
+		AbstractLibraryFinder.__init__(self, libName, checkLibParameters)		
 		self.includePath = includePath
 		self.libPath = libPath		
 		self.envExtensions = envExtensions[platform]
@@ -239,6 +211,111 @@ class SimpleEnviromentLibraryFinder(AbstractLibraryFinder):
 		
 		return self.options_para
 
+class SimpleEnviromentLibraryFinder(AbstractLibraryFinder):
+	includePath=[]
+	libPath=[]	
+	std_lib_paths ={ 'x86_debug' : [ 'lib_debug'] ,'x86_release' : [ 'lib'] , 'x64_debug' : ['lib_debug'], 'x64_release' : ['lib'], 'android_debug' : ['lib_debug'], 'android_release' : ['lib'] }
+	
+	def __init__(self, libName, checkLibParameters, includePath=[], libPath=[] ):
+		AbstractLibraryFinder.__init__(self, libName, checkLibParameters)	
+		if len(includePath) == 0:
+			self.includePath = ['include']
+		else:
+			self.includePath = includePath
+
+		if len(libPath) == 0:
+			self.libPath = self.std_lib_paths[platform+'_'+configuration]
+		else:
+			self.libPath = libPath
+
+	
+	def checkPaths(self, valueKey, rootPath, searchPaths ):
+		found = False				
+		for p1 in searchPaths:		
+			testPath = os.path.join( rootPath , p1) 	
+			if self.setIfValueExists(valueKey, testPath ):					
+				found = True										
+		
+		return found
+	
+	def checkRootPath(self, value):		
+		self.checkPaths('CPPPATH', value, self.includePath)
+		self.checkPaths('LIBPATH', value, self.libPath)				
+		return
+	
+	def checkEnviroment(self, valueKey, value):
+		if os.environ.has_key(value):
+			envPath = os.environ[value]						
+			self.setIfValueExists(valueKey, envPath )		
+		return
+		
+	def checkOpts(self, valueKey, value):
+		if value in opts:
+			optsPath = opts[value]						
+			self.setIfValueExists(valueKey, optsPath )		
+		return
+		
+		
+	def checkForLibraries(self):
+		paraExtension = '';		
+		if platform == 'x86':
+			paraExtension += '_X86'
+		elif platform == 'android':
+			paraExtension += '_ANDROID'
+		if configuration == 'debug':
+			paraExtension += '_DEBUG'
+
+		rootPaths = ['_ROOT', '_PATH']
+		extraPaths = ['CPPPATH', 'LIBPATH']
+
+
+		# check enviroment variables
+		for rp in rootPaths:
+			checkPara = self.libName+rp+paraExtension
+			if os.environ.has_key(checkPara):			
+				self.checkRootPath(os.environ[checkPara])
+			elif configuration == 'debug':
+				checkPara = self.libName+rp
+				if os.environ.has_key(checkPara):			
+					self.checkRootPath(os.environ[checkPara])
+
+		for rp in extraPaths:
+			checkPara = self.libName+'_'+rp
+			self.checkEnviroment(rp, checkPara)
+
+			if configuration == 'debug':
+				checkPara += paraExtension
+				self.checkEnviroment(rp, checkPara)
+
+
+		# check opts variable
+		for rp in rootPaths:
+			checkPara = self.libName+rp
+			if checkPara in opts :
+				self.checkRootPath(opts[checkPara])	
+	
+			if configuration == 'debug':
+				checkPara += paraExtension
+				if checkPara in opts :
+					self.checkRootPath(opts[checkPara])	
+
+		for rp in extraPaths:
+			checkPara = self.libName+'_'+rp
+			self.checkOpts(rp, checkPara)
+
+			if configuration == 'debug':
+				checkPara += paraExtension
+				self.checkOpts(rp, checkPara)
+
+		
+		if  len (self.options_para) == 0:
+			rootPath = os.path.join( Dir('#').abspath, 'external_libraries',platform,self.libName.lower())
+			print "Checking in ubitrack default library structure: %s"%rootPath
+			self.checkRootPath(rootPath)
+		
+		self.tryFindingLibs()
+		
+		return self.options_para
 
 	
 
@@ -324,7 +401,7 @@ class SimpleLibraryConfiguration:
 	def getOptionArray(self, key):
 		return json.loads(self.lib_options.get(self.section, key))
 
-	def setOptionArray(self, key, value):				
+	def setOptionArray(self, key, value):						
 		self.lib_options.set(self.section, key, json.dumps(value))					
 		return
 

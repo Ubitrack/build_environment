@@ -7,9 +7,34 @@ import SCons
 
 Import( '*')
 
+# Environment must be explicitly created from PATH since scons would not find the
+# compiler / linker anymore, and must be initialized with the right target platform
+envOptions = {}
+envOptions[ "ENV" ] = { 'PATH' : os.environ['PATH'] }
+if platform == 'x86':
+	envOptions[ "TARGET_ARCH"] = 'x86'
+elif platform == 'x64':
+	envOptions[ "TARGET_ARCH"] = 'x86_64'
+# currently nothing for android
+
+opts.Add( 'FORCE_MSVC_VERSION', 'Forces scons to use a certain MS Visual Studio Version', 'false' )
+if opts['FORCE_MSVC_VERSION'] != 'false' :
+	print "Forcing MS Visual Studio Version to " + opts[ 'FORCE_MSVC_VERSION' ]
+	envOptions[ "MSVC_VERSION" ] = opts[ 'FORCE_MSVC_VERSION' ]
+
+envOptions[ "MSVS_USE_MFC_DIRS" ] = 1 # needed by drivers that use COM	
+
+
+masterEnv = Environment( **envOptions )
+
+# append custom builder to the environment that allows creating a file
+masterEnv.Append( BUILDERS = { 'CreateFile': create_bld, 'Test': test_bld } )
+
+
 # setup of build enviroment for microsoft windows
 
 masterEnv['ENV']['TMP'] = os.environ['TMP']
+
 	
 # settings for microsoft c++
 masterEnv.Append( CCFLAGS = [ '/EHsc','/c', '/W3', '/GR', '/wd4355', '/wd4996', '/wd4251', '/wd4275', '/wd4819', '/wd4290' ] )
@@ -45,3 +70,19 @@ if 'vcproj' in COMMAND_LINE_TARGETS:
 		
 # export auxilliary functions
 Export( 'masterEnv' )
+
+install_prefix = Dir( './../' ).abspath
+
+installDir = ''
+if platform == 'x64':
+	installDir = opts['INSTALL_DIR_X64']
+	install_library_prefix = os.path.join ( install_prefix , 'lib' )
+else:
+	installDir = opts['INSTALL_DIR_X86']
+	install_library_prefix = os.path.join ( install_prefix , 'lib32' )
+install_binary_prefix = os.path.join ( install_prefix , installDir )
+install_component_prefix = os.path.join ( install_binary_prefix , 'ubitrack' )
+install_include_prefix = os.path.join ( install_prefix , 'include' )
+install_document_prefix = os.path.join ( install_prefix , 'doc' )
+			
+Export( [ 'install_prefix', 'install_library_prefix', 'install_binary_prefix', 'install_component_prefix', 'install_document_prefix', 'install_include_prefix'] )
