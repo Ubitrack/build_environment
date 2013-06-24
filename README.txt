@@ -1,5 +1,10 @@
 Configure Libraries:
-1. Download preconfigured library sets for your operating system from git repo
+1. Download preconfigured library sets for your operating system from git project:
+git+ssh://git@arlabnavab1.informatik.tu-muenchen.de:3000/ubitrack_externallibraries/
+
+e.g. 
+git+ssh://git@arlabnavab1.informatik.tu-muenchen.de:3000/ubitrack_externallibraries/android_armeabi-v7a_all.git
+
 
 2. Create default folder structure
 Create folder  {UbiTrack}/external_libraries/{arch}/{LIBNAME}
