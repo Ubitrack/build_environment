@@ -13,27 +13,34 @@ class AbstractLibraryFinder:
 	libName = ''
 	options_para = {}
 	checkLibParameters = []
-
+	debug_tags = []
 	
 	# {NameOfLibrary e.b. boost}{compile check, array [ {additional compile settings}, {include files}, {language (C++)},{library to link against (optional)}, {source code (optional)}]}{ tags within the lib names to identify debug libraries}
-	def __init__(self, libName, checkLibParameters):
+	def __init__(self, libName, checkLibParameters, debug_tags = ['-d', '_d', '-gd', '_debug']):
 		self.libName = libName
 		self.checkLibParameters = checkLibParameters
+		self.debug_tags = debug_tags
 
 	def setIfValueExists(self, key, value):				
 		exists = True
-		if isinstance( value, list ):			
-			for val1 in value:
-				exists = exists and os.path.exists(val1)
-
-			if exists:
+		if key == 'LIBS':
+			if isinstance( value, list ):											
 				self.options_para[ key ] = value
-
-		else:
-			if os.path.exists(value):
-				self.options_para[ key ] = [ value ]
 			else:
-				exists = False					
+				self.options_para[ key ] =  value.split() 
+		else:
+			if isinstance( value, list ):			
+				for val1 in value:
+					exists = exists and os.path.exists(val1)
+
+				if exists:
+					self.options_para[ key ] = value
+
+			else:
+				if os.path.exists(value):
+					self.options_para[ key ] = [ value ]
+				else:
+					exists = False					
 		return exists
 
 	def setIfContains(self, options, key):
@@ -46,7 +53,10 @@ class AbstractLibraryFinder:
 
 	def tryFindingLibs(self):
 		libs_	= []
-		if self.options_para.has_key('LIBPATH') :			
+		if self.options_para.has_key('LIBS') :
+			print 'has key libs'
+			libs_ =  self.options_para['LIBS']
+		elif self.options_para.has_key('LIBPATH') :			
 			lowername = self.libName.lower()
 
 			libEnding = ''
@@ -62,15 +72,24 @@ class AbstractLibraryFinder:
 
 			for libPath in self.options_para[ 'LIBPATH']:
 				dirList=os.listdir(libPath)
-				lib_release = []
-				lib_debug = []
+				
 				
 				for fname in dirList: # check all files in libpath directory
 					# is this one of the searched libraries?
 					# starts with prefix, contains name of the library
-					if fname.lower().startswith(libPrefix) and fname.endswith(libEnding):
-						libs_.append(fname)
+					if not fname.lower().startswith(libPrefix) or not fname.endswith(libEnding):
+						continue
+						
+					isDebugLib = False
+					for debug_tag in self.debug_tags:						
+						if fname.find(debug_tag) > 0 :
+							isDebugLib = True
+							break						
 
+					if not configuration == "debug" and not isDebugLib:
+						libs_.append(fname)
+					elif configuration == "debug" and isDebugLib:
+						libs_.append(fname)
 	
 
 		
@@ -116,100 +135,6 @@ class AbstractLibraryFinder:
 		conf.Finish()
 		return have_lib
 
-		
-
-
-
-class WindowsEnviromentLibraryFinder(AbstractLibraryFinder):
-	includePath=[]
-	libPath=[]	
-	envExtensions = []
-	
-	def __init__(self, libName, checkLibParameters, includePath=['','include'], libPath=['lib'],  debug_tags = ['-d', '_d', '-gd', '_debug'], envExtensions={ 'x86' : [ '', '32','x86'] , 'x64' : ['', '64','x64'], 'android' : [''] }):
-		AbstractLibraryFinder.__init__(self, libName, checkLibParameters)		
-		self.includePath = includePath
-		self.libPath = libPath		
-		self.envExtensions = envExtensions[platform]
-	
-	def checkPaths(self, valueKey, rootPath, searchPaths ):
-		found = False				
-		for p1 in searchPaths:		
-			for p2 in self.envExtensions:
-				testPath = os.path.join( rootPath , p1 , p2) 											
-				if self.setIfValueExists(valueKey, testPath ):					
-					found = True					
-				testPath = os.path.join( rootPath , p1 + p2) 				
-				if self.setIfValueExists(valueKey, testPath ):
-					found = True					
-		
-		for p1 in self.envExtensions:
-			if p1 == '':
-				continue
-			for p2 in searchPaths:
-				testPath = os.path.join( rootPath , p1 , p2) 
-				if self.setIfValueExists(valueKey, testPath ):
-					found = True						
-		return found
-	
-	def checkRootPath(self, value):		
-		self.checkPaths('CPPPATH', value, self.includePath)
-		self.checkPaths('LIBPATH', value, self.libPath)				
-		return
-	
-	def checkEnviroment(self, valueKey, value):
-		for p1 in self.envExtensions:
-			checkPara = value + p1
-			if os.environ.has_key(checkPara):
-				envPath = os.environ[checkPara]						
-				self.setIfValueExists(valueKey, envPath )		
-		return
-		
-	def checkOpts(self, valueKey, value):
-		for p1 in self.envExtensions:
-			checkPara = value + p1
-			if checkPara in opts:
-				optsPath = opts[checkPara]						
-				self.setIfValueExists(valueKey, optsPath )		
-		return
-		
-		
-	def checkForLibraries(self):		
-		checkPara = self.libName+"_ROOT"		
-		for p1 in self.envExtensions:
-			value = checkPara + p1	
-			if os.environ.has_key(value):			
-				self.checkRootPath(os.environ[value])		
-			
-		checkPara = self.libName+"_PATH"
-		for p1 in self.envExtensions:
-			value = checkPara + p1	
-			if os.environ.has_key(value):			
-				self.checkRootPath(os.environ[value])
-							
-		self.checkEnviroment('CPPPATH', self.libName+"_INCLUDE")
-		self.checkEnviroment('LIBPATH', self.libName+"_LIB")
-
-		# check opts variable
-		checkPara = self.libName+"_ROOT"
-		if checkPara in opts :
-			self.checkRootPath(opts[checkPara])	
-		checkPara = self.libName+"_PATH"
-		if checkPara in opts :
-			self.checkRootPath(opts[checkPara])	
-			
-		checkPara = self.libName+"_ROOT"+platform
-		for p1 in self.envExtensions:
-			checkPara = value + p1
-			if checkPara in opts :
-				self.checkRootPath(opts[ checkPara ])
-		
-				
-		self.checkOpts('CPPPATH', self.libName+"_INCLUDE")
-		self.checkOpts('LIBPATH', self.libName+"_LIBS")
-		
-		self.tryFindingLibs()
-		
-		return self.options_para
 
 class SimpleEnviromentLibraryFinder(AbstractLibraryFinder):
 	includePath=[]
@@ -249,9 +174,9 @@ class SimpleEnviromentLibraryFinder(AbstractLibraryFinder):
 			self.setIfValueExists(valueKey, envPath )		
 		return
 		
-	def checkOpts(self, valueKey, value):
+	def checkOpts(self, valueKey, value):		
 		if value in opts:
-			optsPath = opts[value]						
+			optsPath = opts[value]									
 			self.setIfValueExists(valueKey, optsPath )		
 		return
 		
@@ -266,7 +191,7 @@ class SimpleEnviromentLibraryFinder(AbstractLibraryFinder):
 			paraExtension += '_DEBUG'
 
 		rootPaths = ['_ROOT', '_PATH']
-		extraPaths = ['CPPPATH', 'LIBPATH']
+		extraPaths = ['CPPPATH', 'LIBPATH', 'LIBS', 'CPPDEFINES' ]
 
 
 		# check enviroment variables
@@ -283,7 +208,7 @@ class SimpleEnviromentLibraryFinder(AbstractLibraryFinder):
 			checkPara = self.libName+'_'+rp
 			self.checkEnviroment(rp, checkPara)
 
-			if configuration == 'debug':
+			if configuration == 'debug' or platform == 'x86':				
 				checkPara += paraExtension
 				self.checkEnviroment(rp, checkPara)
 
@@ -294,24 +219,31 @@ class SimpleEnviromentLibraryFinder(AbstractLibraryFinder):
 			if checkPara in opts :
 				self.checkRootPath(opts[checkPara])	
 	
-			if configuration == 'debug':
+			if configuration == 'debug' or platform == 'x86':
 				checkPara += paraExtension
 				if checkPara in opts :
 					self.checkRootPath(opts[checkPara])	
 
 		for rp in extraPaths:
-			checkPara = self.libName+'_'+rp
+			checkPara = self.libName+'_'+rp						
 			self.checkOpts(rp, checkPara)
 
-			if configuration == 'debug':
+			if configuration == 'debug' or platform == 'x86':
 				checkPara += paraExtension
 				self.checkOpts(rp, checkPara)
 
 		
-		if  len (self.options_para) == 0:
+		if  len (self.options_para) == 0:			
 			rootPath = os.path.join( Dir('#').abspath, 'external_libraries',platform,self.libName.lower())
+			testLibPath = os.path.join(rootPath , self.libPath[0] ) 
+			if not os.path.exists(testLibPath):
+				self.libPath = self.std_lib_paths[platform+'_'+'release']
 			print "Checking in ubitrack default library structure: %s"%rootPath
 			self.checkRootPath(rootPath)
+		
+		if self.libName == 'GLUT':
+			print '----------------------------------------'
+			print self.options_para['LIBS']
 		
 		self.tryFindingLibs()
 		
@@ -336,10 +268,9 @@ class SimpleLibraryConfiguration:
 		self.loadConfigSettings()		
 		# start reconfiguration
 		
-
 		# check if configuration is needed
 		if self.lib_options.has_section(self.section) :
-			if 'reconfigure' in COMMAND_LINE_TARGETS:
+			if GetOption('config') == "force":
 				self.setOptionBool('HAVELIB' , False)
 			if not self.haveLib() :
 				self.configure()

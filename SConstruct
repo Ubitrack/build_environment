@@ -53,7 +53,7 @@ else:
 if sys.platform == "win32":
 	opts.Add( 'CONFIGURATION_SUFFIX_MODE', 'suffix for libraries (["addConfiguration","addPlatform"])', [ 'addConfiguration'] )
 # if the app has the same name as the directory i get an error
-# TODO
+# TODO find cause and fix error
 if platform == "android":
 	opts.Add( 'CONFIGURATION_SUFFIX_MODE', 'suffix for libraries (["addConfiguration","addPlatform"])', ['addPlatform', 'addConfiguration'] )
 else:
@@ -70,8 +70,6 @@ if 'addPlatform' in opts[ 'CONFIGURATION_SUFFIX_MODE' ]:
 	configuration_suffix = '_'+platform_suffix+configuration_suffix
 
 
-#ich will das jetzt nicht alles umstellen wenn noch probleme gibt
-configuration_suffix = '_x86'
 
 Export( 'configuration' )
 Export( 'configuration_suffix' )
