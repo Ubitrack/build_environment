@@ -54,7 +54,7 @@ class AbstractLibraryFinder:
 	def tryFindingLibs(self):
 		libs_	= []
 		if self.options_para.has_key('LIBS') :
-			print 'has key libs'
+			print 'Using user definded LIBS'
 			libs_ =  self.options_para['LIBS']
 		elif self.options_para.has_key('LIBPATH') :			
 			lowername = self.libName.lower()
@@ -219,7 +219,7 @@ class SimpleEnviromentLibraryFinder(AbstractLibraryFinder):
 			if checkPara in opts :
 				self.checkRootPath(opts[checkPara])	
 	
-			if configuration == 'debug' or platform == 'x86':
+			if configuration == 'debug' or not platform == 'x64':
 				checkPara += paraExtension
 				if checkPara in opts :
 					self.checkRootPath(opts[checkPara])	
@@ -228,22 +228,19 @@ class SimpleEnviromentLibraryFinder(AbstractLibraryFinder):
 			checkPara = self.libName+'_'+rp						
 			self.checkOpts(rp, checkPara)
 
-			if configuration == 'debug' or platform == 'x86':
+			if configuration == 'debug' or not platform == 'x64':
 				checkPara += paraExtension
 				self.checkOpts(rp, checkPara)
 
 		
-		if  len (self.options_para) == 0:			
+		if  len (self.options_para) == 0 or ( len(self.options_para) == 1 and self.options_para.has_key("LIBS")):			
 			rootPath = os.path.join( Dir('#').abspath, 'external_libraries',platform,self.libName.lower())
 			testLibPath = os.path.join(rootPath , self.libPath[0] ) 
 			if not os.path.exists(testLibPath):
 				self.libPath = self.std_lib_paths[platform+'_'+'release']
 			print "Checking in ubitrack default library structure: %s"%rootPath
 			self.checkRootPath(rootPath)
-		
-		if self.libName == 'GLUT':
-			print '----------------------------------------'
-			print self.options_para['LIBS']
+				
 		
 		self.tryFindingLibs()
 		

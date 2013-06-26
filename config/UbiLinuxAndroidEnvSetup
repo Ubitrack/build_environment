@@ -65,7 +65,9 @@ envOptions['CPPPATH'] = [ANDROID_NDK_STANDALONE_TOOLCHAIN + '/sysroot/usr/includ
 #envOptions['CPPPATH'] += [ANDROID_NDK + '/sources/cxx-stl/gnu-libstdc++/4.4.3/libs/armeabi/include']  
 #envOptions['CPPPATH'] += [target_platform + '/%s/usr/include' % arch]
 
-envOptions['CPPDEFINES'] = ['-DANDROID', '-DLOG4CPP_DISABLE_LOGGING']
+envOptions['CPPDEFINES'] = ['-DANDROID']
+envOptions['CPPDEFINES'] += ['-DLOG4CPP_DISABLE_LOGGING']
+
 
 envOptions['LIBS'] = ['c', 'log', 'm', 'dl', 'z']
 envOptions['LIBS'] += ['GLESv2']
