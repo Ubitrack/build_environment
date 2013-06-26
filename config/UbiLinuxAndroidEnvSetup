@@ -48,6 +48,10 @@ def AndroidSharedLibrary(env, library, sources, **args):
 
 opts.Add( 'ANDROID_NDK_STANDALONE_TOOLCHAIN', 'Android NDK path', '/home/far/android/android-ndk-toolchain' )
 ANDROID_NDK_STANDALONE_TOOLCHAIN = opts[ 'ANDROID_NDK_STANDALONE_TOOLCHAIN' ]
+
+opts.Add( 'CPPDEFINES', 'Defines for compiler', '-DLOG4CPP_DISABLE_LOGGING' )
+
+
 abi='armeabi-v7a'
 
 
@@ -65,8 +69,11 @@ envOptions['CPPPATH'] = [ANDROID_NDK_STANDALONE_TOOLCHAIN + '/sysroot/usr/includ
 #envOptions['CPPPATH'] += [ANDROID_NDK + '/sources/cxx-stl/gnu-libstdc++/4.4.3/libs/armeabi/include']  
 #envOptions['CPPPATH'] += [target_platform + '/%s/usr/include' % arch]
 
-envOptions['CPPDEFINES'] = ['-DANDROID']
-envOptions['CPPDEFINES'] += ['-DLOG4CPP_DISABLE_LOGGING']
+envOptions["CPPDEFINES"] = []
+if opts['CPPDEFINES'] != '' :
+	envOptions["CPPDEFINES"] = opts['CPPDEFINES'].split()
+	
+envOptions['CPPDEFINES'] += ['-DANDROID']
 
 
 envOptions['LIBS'] = ['c', 'log', 'm', 'dl', 'z']

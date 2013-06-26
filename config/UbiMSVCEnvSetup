@@ -18,11 +18,17 @@ elif platform == 'x64':
 # currently nothing for android
 
 opts.Add( 'FORCE_MSVC_VERSION', 'Forces scons to use a certain MS Visual Studio Version', 'false' )
+opts.Add( 'CPPDEFINES', 'Defines for compiler', '' )
+
+if opts['CPPDEFINES'] != '' :
+	envOptions["CPPDEFINES"] = opts['CPPDEFINES'].split()
+
 if opts['FORCE_MSVC_VERSION'] != 'false' :
 	print "Forcing MS Visual Studio Version to " + opts[ 'FORCE_MSVC_VERSION' ]
 	envOptions[ "MSVC_VERSION" ] = opts[ 'FORCE_MSVC_VERSION' ]
 
 envOptions[ "MSVS_USE_MFC_DIRS" ] = 1 # needed by drivers that use COM	
+
 
 
 masterEnv = Environment( **envOptions )
