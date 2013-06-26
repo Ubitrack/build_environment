@@ -55,9 +55,9 @@ if sys.platform == "win32":
 # if the app has the same name as the directory i get an error
 # TODO find cause and fix error
 if platform == "android":
-	opts.Add( 'CONFIGURATION_SUFFIX_MODE', 'suffix for libraries (["addConfiguration","addPlatform"])', ['addPlatform', 'addConfiguration'] )
+	opts.Add( 'CONFIGURATION_SUFFIX_MODE', 'suffix for libraries (["addConfiguration","addPlatform"])', [ 'addConfiguration'] )
 else:
-	opts.Add( 'CONFIGURATION_SUFFIX_MODE', 'suffix for libraries (["addConfiguration","addPlatform"])', ['addPlatform', 'addConfiguration' ] )
+	opts.Add( 'CONFIGURATION_SUFFIX_MODE', 'suffix for libraries (["addConfiguration","addPlatform"])', [ 'addConfiguration' ] )
 
 configuration_suffix = ''
 
