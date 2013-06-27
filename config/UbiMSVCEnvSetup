@@ -20,7 +20,7 @@ elif platform == 'x64':
 opts.Add( 'FORCE_MSVC_VERSION', 'Forces scons to use a certain MS Visual Studio Version', 'false' )
 opts.Add( 'CPPDEFINES', 'Defines for compiler', '' )
 
-if opts['CPPDEFINES'] != '' :
+if opts.has_key("CPPDEFINES"):
 	envOptions["CPPDEFINES"] = opts['CPPDEFINES'].split()
 
 if opts['FORCE_MSVC_VERSION'] != 'false' :

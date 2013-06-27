@@ -70,7 +70,7 @@ envOptions['CPPPATH'] = [ANDROID_NDK_STANDALONE_TOOLCHAIN + '/sysroot/usr/includ
 #envOptions['CPPPATH'] += [target_platform + '/%s/usr/include' % arch]
 
 envOptions["CPPDEFINES"] = []
-if opts['CPPDEFINES'] != '' :
+if opts.has_key("CPPDEFINES"):
 	envOptions["CPPDEFINES"] = opts['CPPDEFINES'].split()
 	
 envOptions['CPPDEFINES'] += ['-DANDROID']

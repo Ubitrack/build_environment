@@ -18,7 +18,7 @@ elif platform == 'x64':
 	
 opts.Add( 'CPPDEFINES', 'Defines for compiler', '' )
 
-if opts['CPPDEFINES'] != '' :
+if opts.has_key("CPPDEFINES"):
 	envOptions["CPPDEFINES"] = opts['CPPDEFINES'].split()
 
 masterEnv = Environment( **envOptions )
