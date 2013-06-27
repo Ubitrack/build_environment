@@ -7,6 +7,8 @@ import SCons
 
 Import( '*')
 
+#general setup from https://github.com/richq/scons-android/
+
 def add_gnu_tools(env, abi, ndk_path):
     """ Add the NDK GNU compiler tools to the Environment """
     gnu_tools = ['gcc', 'g++', 'gnulink', 'ar', 'gas']
@@ -38,12 +40,22 @@ def add_gnu_tools(env, abi, ndk_path):
     env['OBJCOPY'] = tool_prefix+'objcopy'
     env['STRIP'] = tool_prefix+'strip'
 
+
 def AndroidSharedLibrary(env, library, sources, **args):
-	libs = env.OriginalSharedLibrary(library, sources)
-	env.Command(library, libs, [Copy('$TARGET', "$SOURCE"), '$STRIP --strip-unneeded $TARGET'])
-	return libs
-	
-	
+	# there is always only one element in library
+
+	#libs = env.OriginalSharedLibrary(library, sources)
+	#libs = env.OriginalSharedLibrary(os.path.join('local', library[0]), sources)
+	libs = env.OriginalSharedLibrary('local/'+library[0], sources)
+
+	# didn't get this to run in an simpler version
+	if configuration == "release":
+		result = SCons.Node.NodeList([ File(libs[0].name) ])
+		env.Command(result, libs, [Copy('$TARGET', "$SOURCE"), '$STRIP --strip-unneeded $TARGET'])
+		return result
+	else:
+		return libs
+
 	
 
 opts.Add( 'ANDROID_NDK_STANDALONE_TOOLCHAIN', 'Android NDK path', '/home/far/android/android-ndk-toolchain' )
@@ -125,6 +137,7 @@ add_gnu_tools(masterEnv, abi, ANDROID_NDK_STANDALONE_TOOLCHAIN)
 
 masterEnv['BUILDERS']['OriginalSharedLibrary'] = masterEnv['BUILDERS']['SharedLibrary']
 masterEnv['BUILDERS']['SharedLibrary'] = AndroidSharedLibrary
+
 
 # setup of build enviroment for linux
 	
