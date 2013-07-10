@@ -1,6 +1,22 @@
 # ----------------------------------------------------------------------------
 #  Detect 3rd-party libraries
-# ----------------------------------------------------------------------------
+# ----------------------------
+
+IF(X86_64)
+	getenv_path(UBITRACKLIB_EXTERNAL64)
+	IF(ENV_UBITRACKLIB_EXTERNAL64)
+		SET(EXTERNAL_LIBRARIES_DIR "${ENV_UBITRACKLIB_EXTERNAL64}")
+	ENDIF(ENV_UBITRACKLIB_EXTERNAL64)
+ELSE()
+	getenv_path(UBITRACKLIB_EXTERNAL32)
+	IF(ENV_UBITRACKLIB_EXTERNAL32)
+		SET(EXTERNAL_LIBRARIES_DIR "${ENV_UBITRACKLIB_EXTERNAL32}")
+	ENDIF(ENV_UBITRACKLIB_EXTERNAL32)
+ENDIF(X86_64)
+
+
+
+
 # always used supplied tinyxml
 set(TINYXML_LIBRARY tinyxml)
 set(TINYXML_LIBRARIES ${TINYXML_LIBRARY})
@@ -28,6 +44,10 @@ set(HAVE_BOOSTBINDINGS 1)
 
 
 # Find Boost library. Required to compile.
+IF(WIN32 AND DEFINED EXTERNAL_LIBRARIES_DIR)
+	set(BOOST_ROOT_DIR "${EXTERNAL_LIBRARIES_DIR}/boost")
+ENDIF(WIN32 AND DEFINED EXTERNAL_LIBRARIES_DIR)
+
 SET(HAVE_BOOST 0)
 if(MSVC)
   # force dynamic linking of boost libs on windows ..
@@ -44,16 +64,15 @@ if(Boost_FOUND)
 endif(Boost_FOUND)
 
 # Find Lapack library. Required to compile.
+IF(WIN32 AND DEFINED EXTERNAL_LIBRARIES_DIR)
+	set(LAPACK_ROOT_DIR "${EXTERNAL_LIBRARIES_DIR}/lapack")
+ENDIF(WIN32 AND DEFINED EXTERNAL_LIBRARIES_DIR)
+
 SET(HAVE_LAPACK 0)
 IF(WIN32)
 	FIND_PACKAGE(LAPACK)
-	IF(NOT LAPACK_FOUND)
-		# use 3rdparty libraries
-		IF(X86_64)
-			SET(LAPACK_LIB_DIR "${CMAKE_SOURCE_DIR}/modules/utcore/3rd/lapack/win64")
-		ELSE()
-			SET(LAPACK_LIB_DIR "${CMAKE_SOURCE_DIR}/modules/utcore/3rd/lapack/win32")
-		ENDIF(X86_64)
+	IF(NOT LAPACK_FOUND AND DEFINED EXTERNAL_LIBRARIES_DIR)
+		SET(LAPACK_LIB_DIR "${EXTERNAL_LIBRARIES_DIR}/lapack/lib")
 		# for now just manually define the libraries ..
 		SET(LAPACK_LIBRARIES "${LAPACK_LIB_DIR}/atlas.lib" 
 							 "${LAPACK_LIB_DIR}/cblas.lib" 
@@ -63,7 +82,7 @@ IF(WIN32)
 							 "${LAPACK_LIB_DIR}/lapack.lib"
 							 )
 		SET(LAPACK_FOUND 1)
-	ENDIF(NOT LAPACK_FOUND)
+	ENDIF(NOT LAPACK_FOUND AND DEFINED EXTERNAL_LIBRARIES_DIR)
 ELSE()
 	FIND_PACKAGE(LAPACK REQUIRED)
 ENDIF(WIN32)
@@ -73,6 +92,10 @@ IF(LAPACK_FOUND)
 ENDIF(LAPACK_FOUND)
 
 #OpenCV 
+IF(WIN32 AND DEFINED EXTERNAL_LIBRARIES_DIR)
+	set(OPENCV_ROOT_DIR "${EXTERNAL_LIBRARIES_DIR}/opencv")
+ENDIF(WIN32 AND DEFINED EXTERNAL_LIBRARIES_DIR)
+
 SET(HAVE_OPENCV 0)
 FIND_PACKAGE(OpenCV)
 IF(OPENCV_FOUND)
@@ -81,12 +104,32 @@ IF(OPENCV_FOUND)
   SET(HAVE_OPENCV 1)
 ENDIF(OPENCV_FOUND)
 
-# If your TBB install directory is not found automatically, enter it here or use TBB_INSTALL_DIR env variable. (w/o trailing slash)
-#set(TBB_INSTALL_DIR "/usr/local")
-# Enter your architecture [ia32|em64t|itanium] here
-#set(TBB_ARCHITECTURE "em64t")
-# If your compiler is not detected automatically, enter it here. (e.g. vc9 or cc3.2.3_libc2.3.2_kernel2.4.21 or cc4.0.1_os10.4.9)
-#set(TBB_COMPILER "...")
+# TBB
+# setup defaults for windows binary distributions
+if (WIN32)
+    if (MSVC71)
+        set (TBB_COMPILER "vc7.1")
+    endif(MSVC71)
+    if (MSVC80)
+        set(TBB_COMPILER "vc8")
+    endif(MSVC80)
+    if (MSVC90)
+        set(TBB_COMPILER "vc9")
+    endif(MSVC90)
+    if(MSVC10)
+        set(TBB_COMPILER "vc10")
+    endif(MSVC10)
+	IF(X86_64)
+		set(TBB_ARCHITECTURE "intel64")
+	ELSE()
+		set(TBB_ARCHITECTURE "ia32")
+	ENDIF(X86_64)
+endif (WIN32)
+
+IF(WIN32 AND DEFINED EXTERNAL_LIBRARIES_DIR)
+	set(TBB_INSTALL_DIR "${EXTERNAL_LIBRARIES_DIR}/tbb")
+ENDIF(WIN32 AND DEFINED EXTERNAL_LIBRARIES_DIR)
+
 SET(HAVE_TBB 0)
 find_package(TBB)
 IF(TBB_FOUND)
@@ -94,7 +137,7 @@ IF(TBB_FOUND)
   SET(HAVE_TBB 1)
 ENDIF(TBB_FOUND)
 
-
+# OpenGL
 SET(HAVE_OPENGL 0)
 find_package(OpenGL)
 IF(OpenGL_FOUND)
@@ -102,6 +145,11 @@ IF(OpenGL_FOUND)
   SET(HAVE_OPENGL 1)
   MESSAGE(STATUS "Found OpenGL: ${OpenGL_INCLUDE_DIR} - ${OpenGL_LIBRARIES}")
 ENDIF(OpenGL_FOUND)
+
+#FreeGlut
+IF(WIN32 AND DEFINED EXTERNAL_LIBRARIES_DIR)
+	set(FREEGLUT_ROOT_DIR "${EXTERNAL_LIBRARIES_DIR}/glut")
+ENDIF(WIN32 AND DEFINED EXTERNAL_LIBRARIES_DIR)
 
 SET(HAVE_FREEGLUT 0)
 find_package(Freeglut)
@@ -111,6 +159,7 @@ IF(Freeglut_FOUND)
   MESSAGE(STATUS "Found Freeglut: ${Freeglut_INCLUDE_DIR} - ${Freeglut_LIBRARIES}")
 ENDIF(Freeglut_FOUND)
 
+# Java
 SET(HAVE_JAVA 0)
 find_package(JNI)
 IF(JNI_FOUND)
@@ -120,6 +169,10 @@ IF(JNI_FOUND)
 ENDIF(JNI_FOUND)
 
 
+#SWIG
+IF(WIN32 AND DEFINED EXTERNAL_LIBRARIES_DIR)
+	set(SWIG_ROOT_DIR "${EXTERNAL_LIBRARIES_DIR}/swig")
+ENDIF(WIN32 AND DEFINED EXTERNAL_LIBRARIES_DIR)
 
 SET(HAVE_SWIG 0)
 find_package(SWIG)
@@ -129,6 +182,7 @@ IF(SWIG_FOUND)
   INCLUDE(${SWIG_USE_FILE})
 ENDIF(SWIG_FOUND)
 
+# pthreads
 IF(UNIX)
 	find_package(PTHREAD)
 	IF(PTHREAD_FOUND)

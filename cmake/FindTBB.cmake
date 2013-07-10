@@ -203,12 +203,10 @@ endif (NOT $ENV{TBB_ARCH_PLATFORM} STREQUAL "")
 #       (hence no else), instead I test if the user really specified
 #       the variables in question.
 if ((NOT ${TBB_ARCHITECTURE} STREQUAL "") AND (NOT ${TBB_COMPILER} STREQUAL ""))
-    # HH: deprecated
-    message(STATUS "[Warning] FindTBB.cmake: The use of TBB_ARCHITECTURE and TBB_COMPILER is deprecated and may not be supported in future versions. Please set \$ENV{TBB_ARCH_PLATFORM} (using tbbvars.[bat|csh|sh]).")
     # Jiri: It doesn't hurt to look in more places, so I store the hints from
     #       ENV{TBB_ARCH_PLATFORM} and the TBB_ARCHITECTURE and TBB_COMPILER
     #       variables and search them both.
-    set (_TBB_LIBRARY_DIR "${_TBB_INSTALL_DIR}/${_TBB_ARCHITECTURE}/${_TBB_COMPILER}/lib" ${_TBB_LIBRARY_DIR})
+    set (_TBB_LIBRARY_DIR "${_TBB_INSTALL_DIR}/lib/${_TBB_ARCHITECTURE}/${_TBB_COMPILER}" ${_TBB_LIBRARY_DIR})
 endif ((NOT ${TBB_ARCHITECTURE} STREQUAL "") AND (NOT ${TBB_COMPILER} STREQUAL ""))
 
 # GvdB: Mac OS X distribution places libraries directly in lib directory.
@@ -284,10 +282,10 @@ if (TBB_INCLUDE_DIR)
 		
 		# combined TBB_ALL_LIBRARIES for simpler creation of MSVC projects
 		if (${__HAVE_TBB_LIBRARY} AND ${__HAVE_TBB_LIBRARY_DEBUG})
+			#LIST(APPEND TBB_ALL_LIBRARIES optimized)
+			LIST(APPEND TBB_ALL_LIBRARIES ${TBB_LIBRARY})
 			LIST(APPEND TBB_ALL_LIBRARIES debug)
 			LIST(APPEND TBB_ALL_LIBRARIES ${TBB_LIBRARY_DEBUG})
-			LIST(APPEND TBB_ALL_LIBRARIES optimized)
-			LIST(APPEND TBB_ALL_LIBRARIES ${TBB_LIBRARY})
 		elseif (${__HAVE_TBB_LIBRARY_DEBUG})
 			LIST(APPEND TBB_ALL_LIBRARIES ${TBB_LIBRARY_DEBUG})
 		else (${__HAVE_TBB_LIBRARY} AND ${__HAVE_TBB_LIBRARY_DEBUG})
@@ -295,10 +293,10 @@ if (TBB_INCLUDE_DIR)
 		endif (${__HAVE_TBB_LIBRARY} AND ${__HAVE_TBB_LIBRARY_DEBUG})
 
 		if (${__HAVE_TBB_MALLOC_LIBRARY} AND ${__HAVE_TBB_MALLOC_LIBRARY_DEBUG})
+			#LIST(APPEND TBB_ALL_LIBRARIES optimized)
+			LIST(APPEND TBB_ALL_LIBRARIES ${TBB_MALLOC_LIBRARY})
 			LIST(APPEND TBB_ALL_LIBRARIES debug)
 			LIST(APPEND TBB_ALL_LIBRARIES ${TBB_MALLOC_LIBRARY_DEBUG})
-			LIST(APPEND TBB_ALL_LIBRARIES optimized)
-			LIST(APPEND TBB_ALL_LIBRARIES ${TBB_MALLOC_LIBRARY})
 		elseif (${__HAVE_TBB_MALLOC_LIBRARY_DEBUG})
 			LIST(APPEND TBB_ALL_LIBRARIES ${TBB_MALLOC_LIBRARY_DEBUG})
 		else (${__HAVE_TBB_MALLOC_LIBRARY} AND ${__HAVE_TBB_MALLOC_LIBRARY_DEBUG})
@@ -310,7 +308,7 @@ if (TBB_INCLUDE_DIR)
         # Jiri: Self-built TBB stores the debug libraries in a separate directory.
         set (TBB_DEBUG_LIBRARY_DIRS ${TBB_LIBRARY_DEBUG_DIR} CACHE PATH "TBB debug library directory" FORCE)
         mark_as_advanced(TBB_INCLUDE_DIRS TBB_LIBRARY_DIRS TBB_DEBUG_LIBRARY_DIRS TBB_LIBRARIES TBB_ALL_LIBRARIES TBB_DEBUG_LIBRARIES)
-        message(STATUS "Found Intel TBB")
+        message(STATUS "Found Intel TBB: ${TBB_ALL_LIBRARIES}")
     endif (TBB_LIBRARY)
 endif (TBB_INCLUDE_DIR)
 

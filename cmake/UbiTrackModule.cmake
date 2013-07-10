@@ -453,7 +453,7 @@ macro(ut_create_module)
 	#set_target_properties(${the_module} PROPERTIES COMPILE_DEFINITIONS UBITRACK_NOSTL)
 
 	if(NOT "${ARGN}" STREQUAL "SKIP_LINK")
-	#MESSAGE(STATUS "${the_module} ${UBITRACK_MODULE_${the_module}_DEPS} ${UBITRACK_MODULE_${the_module}_DEPS_EXT} ${UBITRACK_LINKER_LIBS} ${IPP_LIBS} ${ARGN}")
+	  #MESSAGE(STATUS "${the_module} ${UBITRACK_MODULE_${the_module}_DEPS} ${UBITRACK_MODULE_${the_module}_DEPS_EXT} ${UBITRACK_LINKER_LIBS} ${IPP_LIBS} ${ARGN}")
 	  target_link_libraries(${the_module} ${UBITRACK_MODULE_${the_module}_DEPS} ${UBITRACK_MODULE_${the_module}_DEPS_EXT} ${UBITRACK_LINKER_LIBS} ${IPP_LIBS} ${ARGN})
 
 	  #if (HAVE_CUDA)

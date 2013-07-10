@@ -157,3 +157,10 @@ macro(ut_convert_to_full_paths VAR)
   endif()
 endmacro()
 
+macro(getenv_path VAR)
+   set(ENV_${VAR} $ENV{${VAR}})
+   # replace won't work if var is blank
+   if (ENV_${VAR})
+     string( REGEX REPLACE "\\\\" "/" ENV_${VAR} ${ENV_${VAR}} )
+   endif ()
+endmacro(getenv_path)
