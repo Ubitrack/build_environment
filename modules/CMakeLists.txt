@@ -1,8 +1,0 @@
-add_definitions(-D__UBITRACK_BUILD=1)
-
-if(NOT UBITRACK_MODULES_PATH)
-  set(UBITRACK_MODULES_PATH "${CMAKE_CURRENT_SOURCE_DIR}")
-endif()
-
-ut_glob_modules(${UBITRACK_MODULES_PATH})
-	
