@@ -54,6 +54,10 @@ PROJECT(UbiTack CXX C)
 SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" )
 
 include(cmake/UbiTrackUtils.cmake)
+if(WIN32)
+	include(cmake/UbiTrackDetermineCSharpCompiler.cmake)
+	include(cmake/UbiTrackCSharpHelpers.cmake)
+endif(WIN32)
 
 # ----------------------------------------------------------------------------
 # Break in case of popular CMake configuration mistakes
