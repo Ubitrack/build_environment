@@ -1,0 +1,19 @@
+[module]
+name = ${the_module}
+type = ${UBITRACK_MODULE_TYPE}
+depends = ${UBITRACK_MODULE_${the_module}_DEPS}
+depends_ext = ${UBITRACK_MODULE_${the_module}_DEPS_EXT}
+source_dir = ${CMAKE_CURRENT_SOURCE_DIR}
+
+[files]
+headers = ${UBITRACK_MODULE_${the_module}_HEADERS}
+sources = ${UBITRACK_MODULE_${the_module}_SOURCES}
+
+[compiler]
+libraries = ${UBITRACK_LINKER_LIBS} ${IPP_LIBS} ${ARGN}
+include_dirs = ${METADATA_${the_module}_INCLUDE_DIRS}
+compile_flags = ${METADATA_${the_module}__COMPILE_FLAGS}
+link_flags = ${METADATA_${the_module}__LINK_FLAGS}
+definitions = ${METADATA_${the_module}_DEFINITIONS}
+cmake_c_flags = ${CMAKE_C_FLAGS}
+cmake_cxx_flags = ${CMAKE_CXX_FLAGS}
