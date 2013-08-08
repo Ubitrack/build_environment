@@ -1,0 +1,53 @@
+[submodule "modules/mswindows"]
+	path = modules/mswindows
+	url = ssh://git@arlabnavab1.informatik.tu-muenchen.de:3000/Ubitrack/mswindows.git
+	branch = cmake_build
+[submodule "modules/uthaptics"]
+	path = modules/uthaptics
+	url = ssh://git@arlabnavab1.informatik.tu-muenchen.de:3000/hapticcalibration/uthaptics.git
+[submodule "modules/artdriver"]
+	path = modules/artdriver
+	url = ssh://git@arlabnavab1.informatik.tu-muenchen.de:3000/ubitrackdriver/artdriver.git
+	branch = cmake_build
+[submodule "modules/firewirecamera"]
+	path = modules/firewirecamera
+	url = ssh://git@arlabnavab1.informatik.tu-muenchen.de:3000/ubitrackdriver/firewirecamera.git
+[submodule "modules/flycapture"]
+	path = modules/flycapture
+	url = ssh://git@arlabnavab1.informatik.tu-muenchen.de:3000/ubitrackdriver/flycapture.git
+	branch = cmake_build
+[submodule "modules/utcomponents"]
+	path = modules/utcomponents
+	url = ssh://git@arlabnavab1.informatik.tu-muenchen.de:3000/Ubitrack/utcomponents.git
+	branch = cmake_build
+[submodule "modules/utcore"]
+	path = modules/utcore
+	url = ssh://git@arlabnavab1.informatik.tu-muenchen.de:3000/Ubitrack/utcore.git
+	branch = cmake_build
+[submodule "modules/utdataflow"]
+	path = modules/utdataflow
+	url = ssh://git@arlabnavab1.informatik.tu-muenchen.de:3000/Ubitrack/utdataflow.git
+	branch = cmake_build
+[submodule "modules/utfacade"]
+	path = modules/utfacade
+	url = ssh://git@arlabnavab1.informatik.tu-muenchen.de:3000/Ubitrack/utfacade.git
+	branch = cmake_build
+[submodule "modules/utvision"]
+	path = modules/utvision
+	url = ssh://git@arlabnavab1.informatik.tu-muenchen.de:3000/Ubitrack/utvision.git
+	branch = cmake_build
+[submodule "modules/utvisioncomponents"]
+	path = modules/utvisioncomponents
+	url = ssh://git@arlabnavab1.informatik.tu-muenchen.de:3000/Ubitrack/utvisioncomponents.git
+	branch = cmake_build
+[submodule "modules/utvisualization"]
+	path = modules/utvisualization
+	url = ssh://git@arlabnavab1.informatik.tu-muenchen.de:3000/Ubitrack/utvisualization.git
+	branch = cmake_build
+[submodule "modules/vrpntracker"]
+	path = modules/vrpntracker
+	url = ssh://git@arlabnavab1.informatik.tu-muenchen.de:3000/ubitrackdriver/vrpntracker.git
+[submodule "modules/multimarkertracker"]
+	path = modules/multimarkertracker
+	url = ssh://git@arlabnavab1.informatik.tu-muenchen.de:3000/ubitrackdriver/multimarkertracker.git
+	branch = cmake_build
