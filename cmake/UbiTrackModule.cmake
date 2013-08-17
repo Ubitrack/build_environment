@@ -454,6 +454,7 @@ macro(ut_create_module)
 
 	if(NOT "${ARGN}" STREQUAL "SKIP_LINK")
 	  #MESSAGE(STATUS "${the_module} ${UBITRACK_MODULE_${the_module}_DEPS} ${UBITRACK_MODULE_${the_module}_DEPS_EXT} ${UBITRACK_LINKER_LIBS} ${IPP_LIBS} ${ARGN}")
+          set(UBITRACK_MODULE_${the_module}_LINK_LIBRARIES ${UBITRACK_MODULE_${the_module}_DEPS} ${UBITRACK_MODULE_${the_module}_DEPS_EXT} ${UBITRACK_LINKER_LIBS} ${IPP_LIBS} ${ARGN})
 	  target_link_libraries(${the_module} ${UBITRACK_MODULE_${the_module}_DEPS} ${UBITRACK_MODULE_${the_module}_DEPS_EXT} ${UBITRACK_LINKER_LIBS} ${IPP_LIBS} ${ARGN})
 
 	  #if (HAVE_CUDA)
@@ -536,12 +537,27 @@ endmacro()
 # Usage:
 #   ut_create_module_metadata(<extra link dependencies>)
 macro(ut_create_module_metadata)
-    get_property(METADATA_${the_module}_INCLUDE_DIRS DIRECTORY PROPERTY INCLUDE_DIRECTORIES)
-    get_property(METADATA_${the_module}_DEFINITIONS DIRECTORY PROPERTY DEFINITIONS)
+
+# print out all variables
+#get_cmake_property(_variableNames VARIABLES)
+#foreach (_variableName ${_variableNames})
+#    message(STATUS "${_variableName}=${${_variableName}}")
+#endforeach()
+
+    get_property(METADATA_${the_module}_INCLUDE_DIRS DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES)
+    get_property(METADATA_${the_module}_DEFINITIONS DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY DEFINITIONS)
     get_property(METADATA_${the_module}_LINK_FLAGS TARGET ${the_module} PROPERTY LINK_FLAGS)
     get_property(METADATA_${the_module}_COMPILE_FLAGS TARGET ${the_module} PROPERTY COMPILE_FLAGS)
+    get_property(METADATA_${the_module}_COMPILE_DEFINITIONS TARGET ${the_module} PROPERTY COMPILE_DEFINITIONS)
+
+    set(METADATA_${the_module}_HEADER_FILES ${UBITRACK_MODULE_${the_module}_HEADERS})
+    ut_convert_to_relative_paths(${CMAKE_CURRENT_SOURCE_DIR} METADATA_${the_module}_HEADER_FILES)
+
+    set(METADATA_${the_module}_SOURCE_FILES ${UBITRACK_MODULE_${the_module}_SOURCES})
+    ut_convert_to_relative_paths(${CMAKE_CURRENT_SOURCE_DIR} METADATA_${the_module}_SOURCE_FILES)
+    
     configure_file(${CMAKE_SOURCE_DIR}/cmake/metadata/module_cmake.dat ${CMAKE_CURRENT_BINARY_DIR}/metadata/${the_module}.dat)
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/metadata/${the_module}.dat DESTINATION ${UBITRACK_METADATA_INSTALL_PATH}/modules/ )
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/metadata/${the_module}.dat DESTINATION ${UBITRACK_METADATA_INSTALL_DIRECTORY}/modules/ )
 endmacro()
 
 

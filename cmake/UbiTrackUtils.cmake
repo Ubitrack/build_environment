@@ -157,6 +157,21 @@ macro(ut_convert_to_full_paths VAR)
   endif()
 endmacro()
 
+# convert list of paths to relative paths
+macro(ut_convert_to_relative_paths ROOT VAR)
+  if(${VAR})
+    set(__tmp "")
+    foreach(path ${${VAR}})
+      string( REGEX REPLACE "//" "/" path ${path} )
+      string(REGEX REPLACE "^${ROOT}/" "" ${VAR} "${path}")
+      list(APPEND __tmp "${${VAR}}")
+    endforeach()
+    set(${VAR} ${__tmp})
+    unset(__tmp)
+  endif()
+endmacro()
+
+
 macro(getenv_path VAR)
    set(ENV_${VAR} $ENV{${VAR}})
    # replace won't work if var is blank

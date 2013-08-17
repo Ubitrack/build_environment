@@ -6,14 +6,15 @@ depends_ext = ${UBITRACK_MODULE_${the_module}_DEPS_EXT}
 source_dir = ${CMAKE_CURRENT_SOURCE_DIR}
 
 [files]
-headers = ${UBITRACK_MODULE_${the_module}_HEADERS}
-sources = ${UBITRACK_MODULE_${the_module}_SOURCES}
+headers = ${METADATA_${the_module}_HEADER_FILES}
+sources = ${METADATA_${the_module}_SOURCE_FILES}
 
 [compiler]
-libraries = ${UBITRACK_LINKER_LIBS} ${IPP_LIBS} ${ARGN}
+libraries = ${UBITRACK_MODULE_${the_module}_LINK_LIBRARIES}
 include_dirs = ${METADATA_${the_module}_INCLUDE_DIRS}
-compile_flags = ${METADATA_${the_module}__COMPILE_FLAGS}
-link_flags = ${METADATA_${the_module}__LINK_FLAGS}
+compile_definitions = ${METADATA_${the_module}_COMPILE_DEFINITIONS}
+compile_flags = ${METADATA_${the_module}_COMPILE_FLAGS}
+link_flags = ${METADATA_${the_module}_LINK_FLAGS}
 definitions = ${METADATA_${the_module}_DEFINITIONS}
 cmake_c_flags = ${CMAKE_C_FLAGS}
 cmake_cxx_flags = ${CMAKE_CXX_FLAGS}
