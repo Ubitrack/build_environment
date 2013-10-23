@@ -228,6 +228,16 @@ endif(APPLE)
 # add 3rdparty libraries
 include(cmake/UbiTrackFindCoreLibraries.cmake)
 
+# all core includes
+set(UBITRACK_CORE_DEPS_INCLUDE_DIR 
+		${TINYXML_INCLUDE_DIR} 
+		${LOG4CPP_INCLUDE_DIR} 
+		${BOOSTBINDINGS_INCLUDE_DIR} 
+		${LAPACK_INCLUDE_DIR} 
+		${Boost_INCLUDE_DIR} 
+		${PYTHON_INCLUDE_DIRS}
+		)
+
 # Extra UbiTrack targets: uninstall, package_source, perf, etc.
 include(cmake/UbiTrackExtraTargets.cmake)
 

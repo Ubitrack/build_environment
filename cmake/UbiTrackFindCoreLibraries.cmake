@@ -57,12 +57,22 @@ endif(MSVC)
 set(Boost_USE_STATIC_LIBS   OFF)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
-find_package( Boost 1.49 COMPONENTS thread date_time system filesystem regex chrono locale serialization program_options REQUIRED)
+find_package( Boost 1.49 COMPONENTS thread date_time system filesystem regex chrono locale serialization program_options python REQUIRED)
 if(Boost_FOUND)
   add_definitions("-DBOOST_FILESYSTEM_VERSION=3")
   add_definitions(-DHAVE_BOOST)
   SET(HAVE_BOOST 1)
+
+  link_directories(${Boost_LIBRARY_DIRS})
 endif(Boost_FOUND)
+
+# get python
+find_package(PythonLibs REQUIRED)
+IF(PYTHONLIBS_FOUND)
+  link_directories(${PYTHON_LIBRARIES})
+  add_definitions(-DHAVE_PYTHON)
+  SET(HAVE_PYTHON 1)
+ENDIF(PYTHONLIBS_FOUND)
 
 # Find Lapack library. Required to compile.
 IF(WIN32 AND DEFINED EXTERNAL_LIBRARIES_DIR)

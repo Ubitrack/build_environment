@@ -110,7 +110,7 @@ macro(ut_add_component name)
 endmacro()
 
 # setup include path for UbiTrack headers for specified component
-# ut_module_include_directories(<extra include directories/extra include modules>)
+# ut_component_include_directories(<extra include directories/extra include components>)
 macro(ut_component_include_directories)
   ut_include_directories( "${CMAKE_CURRENT_BINARY_DIR}")
   ut_include_modules(${UBITRACK_COMPONENT_${the_component}_DEPS} ${ARGN})
@@ -229,6 +229,12 @@ macro(ut_create_multi_component)
 
 	 endforeach()
 
+	set(UBITRACK_COMPONENT_${the_component}_LINK_LIBRARIES ${UBITRACK_COMPONENT_${the_component}_DEPS} ${UBITRACK_COMPONENT_${the_component}_DEPS_EXT} ${UBITRACK_LINKER_LIBS} ${IPP_LIBS} ${ARGN})
+	#experimental
+	ut_create_component_metadata()
+
+
+
 endmacro()
 
 # creates UbiTrack component in current folder
@@ -239,7 +245,8 @@ macro(ut_create_single_component)
 	add_library(${the_component} SHARED ${UBITRACK_COMPONENT_${the_component}_HEADERS} ${UBITRACK_COMPONENT_${the_component}_SOURCES})
 
 	#MESSAGE(STATUS "${the_component} ${UBITRACK_COMPONENT_${the_component}_DEPS} ${UBITRACK_COMPONENT_${the_component}_DEPS_EXT} ${UBITRACK_LINKER_LIBS} ${IPP_LIBS} ${ARGN}")
-	target_link_libraries(${the_component} ${UBITRACK_COMPONENT_${the_component}_DEPS} ${UBITRACK_COMPONENT_${the_component}_DEPS_EXT} ${UBITRACK_LINKER_LIBS} ${IPP_LIBS} ${ARGN})
+	set(UBITRACK_COMPONENT_${the_component}_LINK_LIBRARIES ${UBITRACK_COMPONENT_${the_component}_DEPS} ${UBITRACK_COMPONENT_${the_component}_DEPS_EXT} ${UBITRACK_LINKER_LIBS} ${IPP_LIBS} ${ARGN})
+  	target_link_libraries(${the_component} ${UBITRACK_COMPONENT_${the_component}_DEPS} ${UBITRACK_COMPONENT_${the_component}_DEPS_EXT} ${UBITRACK_LINKER_LIBS} ${IPP_LIBS} ${ARGN})
 
 	set_target_properties(${the_component} PROPERTIES
 	  OUTPUT_NAME "${the_component}"
@@ -283,4 +290,36 @@ macro(ut_create_single_component)
 	  ARCHIVE DESTINATION ${UBITRACK_COMPONENT_INSTALL_PATH} COMPONENT main
 	  )
 
+	#experimental
+	ut_create_component_metadata()
+
 endmacro()
+
+
+# creates metadata file for UbiTrack component
+# Usage:
+#   ut_create_component_metadata(<extra link dependencies>)
+macro(ut_create_component_metadata)
+
+# print out all variables
+#get_cmake_property(_variableNames VARIABLES)
+#foreach (_variableName ${_variableNames})
+#    message(STATUS "${_variableName}=${${_variableName}}")
+#endforeach()
+
+    get_property(METADATA_${the_component}_INCLUDE_DIRS DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY INCLUDE_DIRECTORIES)
+    get_property(METADATA_${the_component}_DEFINITIONS DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} PROPERTY DEFINITIONS)
+    #get_property(METADATA_${the_component}_LINK_FLAGS TARGET ${the_component} PROPERTY LINK_FLAGS)
+    #get_property(METADATA_${the_component}_COMPILE_FLAGS TARGET ${the_component} PROPERTY COMPILE_FLAGS)
+    #get_property(METADATA_${the_component}_COMPILE_DEFINITIONS TARGET ${the_component} PROPERTY COMPILE_DEFINITIONS)
+
+    set(METADATA_${the_component}_HEADER_FILES ${UBITRACK_COMPONENT_${the_component}_HEADERS})
+    ut_convert_to_relative_paths(${CMAKE_CURRENT_SOURCE_DIR} METADATA_${the_component}_HEADER_FILES)
+
+    set(METADATA_${the_component}_SOURCE_FILES ${UBITRACK_COMPONENT_${the_component}_SOURCES})
+    ut_convert_to_relative_paths(${CMAKE_CURRENT_SOURCE_DIR} METADATA_${the_component}_SOURCE_FILES)
+    
+    configure_file(${CMAKE_SOURCE_DIR}/cmake/metadata/component_cmake.dat ${CMAKE_CURRENT_BINARY_DIR}/metadata/${the_component}.dat)
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/metadata/${the_component}.dat DESTINATION ${UBITRACK_METADATA_INSTALL_DIRECTORY}/components/ )
+endmacro()
+
