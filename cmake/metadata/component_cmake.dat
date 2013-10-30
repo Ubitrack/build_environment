@@ -1,0 +1,17 @@
+[component]
+name = ${the_component}
+type = ${UBITRACK_COMPONENT_TYPE}
+depends = ${UBITRACK_COMPONENT_${the_component}_DEPS}
+depends_ext = ${UBITRACK_COMPONENT_${the_component}_DEPS_EXT}
+source_dir = ${CMAKE_CURRENT_SOURCE_DIR}
+
+[files]
+headers = ${METADATA_${the_component}_HEADER_FILES}
+sources = ${METADATA_${the_component}_SOURCE_FILES}
+
+[compiler]
+libraries = ${UBITRACK_COMPONENT_${the_component}_LINK_LIBRARIES}
+include_dirs = ${METADATA_${the_component}_INCLUDE_DIRS}
+definitions = ${METADATA_${the_component}_DEFINITIONS}
+cmake_c_flags = ${CMAKE_C_FLAGS}
+cmake_cxx_flags = ${CMAKE_CXX_FLAGS}
