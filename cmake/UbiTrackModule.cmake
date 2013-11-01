@@ -528,7 +528,9 @@ macro(ut_create_module)
 	endif()
 
 	#experimental
-	ut_create_module_metadata()
+	IF(GENERATE_METADATA)
+    	ut_create_module_metadata()
+	ENDIF(GENERATE_METADATA)
 
 endmacro()
 

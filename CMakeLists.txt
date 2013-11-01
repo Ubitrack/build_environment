@@ -113,7 +113,7 @@ endif(APPLE)
 
 # Build Options go here
 #UT_OPTION(WITH_1394           "Include IEEE1394 support"                    ON   IF (UNIX AND NOT ANDROID AND NOT IOS) )
-
+OPTION(GENERATE_METADATA    "Generate Metadata for Modules and Components"    OFF)
 
 # Set Ubitrack Version (can we get it from headers ?)
 SET(UBITRACK_VERSION_MAJOR 1)
@@ -235,7 +235,7 @@ set(UBITRACK_CORE_DEPS_INCLUDE_DIR
 		${BOOSTBINDINGS_INCLUDE_DIR} 
 		${LAPACK_INCLUDE_DIR} 
 		${Boost_INCLUDE_DIR} 
-		${PYTHON_INCLUDE_DIRS}
+		#${PYTHON_INCLUDE_DIRS}
 		)
 
 # Extra UbiTrack targets: uninstall, package_source, perf, etc.

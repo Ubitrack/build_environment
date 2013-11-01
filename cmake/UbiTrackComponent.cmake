@@ -229,9 +229,11 @@ macro(ut_create_multi_component)
 
 	 endforeach()
 
-	set(UBITRACK_COMPONENT_${the_component}_LINK_LIBRARIES ${UBITRACK_COMPONENT_${the_component}_DEPS} ${UBITRACK_COMPONENT_${the_component}_DEPS_EXT} ${UBITRACK_LINKER_LIBS} ${IPP_LIBS} ${ARGN})
-	#experimental
-	ut_create_component_metadata()
+	IF(GENERATE_METADATA)
+    	set(UBITRACK_COMPONENT_${the_component}_LINK_LIBRARIES ${UBITRACK_COMPONENT_${the_component}_DEPS} ${UBITRACK_COMPONENT_${the_component}_DEPS_EXT} ${UBITRACK_LINKER_LIBS} ${IPP_LIBS} ${ARGN})
+    	#experimental
+    	ut_create_component_metadata()
+	ENDIF(GENERATE_METADATA)
 
 
 
@@ -290,8 +292,10 @@ macro(ut_create_single_component)
 	  ARCHIVE DESTINATION ${UBITRACK_COMPONENT_INSTALL_PATH} COMPONENT main
 	  )
 
-	#experimental
-	ut_create_component_metadata()
+	IF(GENERATE_METADATA)
+    	#experimental
+    	ut_create_component_metadata()
+	ENDIF(GENERATE_METADATA)
 
 endmacro()
 
