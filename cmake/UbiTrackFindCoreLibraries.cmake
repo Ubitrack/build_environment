@@ -67,12 +67,12 @@ if(Boost_FOUND)
 endif(Boost_FOUND)
 
 # get python
-find_package(PythonLibs REQUIRED)
-IF(PYTHONLIBS_FOUND)
-  link_directories(${PYTHON_LIBRARIES})
-  add_definitions(-DHAVE_PYTHON)
-  SET(HAVE_PYTHON 1)
-ENDIF(PYTHONLIBS_FOUND)
+#find_package(PythonLibs REQUIRED)
+#IF(PYTHONLIBS_FOUND)
+#  link_directories(${PYTHON_LIBRARIES})
+#  add_definitions(-DHAVE_PYTHON)
+#  SET(HAVE_PYTHON 1)
+#ENDIF(PYTHONLIBS_FOUND)
 
 # Find Lapack library. Required to compile.
 IF(WIN32 AND DEFINED EXTERNAL_LIBRARIES_DIR)
