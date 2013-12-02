@@ -1,0 +1,160 @@
+import glob
+import sys
+import os
+import config
+import string
+import SCons
+
+Import( '*')
+
+#general setup from https://github.com/richq/scons-android/
+
+def add_gnu_tools(env, abi, ndk_path):
+    """ Add the NDK GNU compiler tools to the Environment """
+    gnu_tools = ['gcc', 'g++', 'gnulink', 'ar', 'gas']
+    for tool in gnu_tools:
+        env.Tool(tool)
+    arm_linux = 'arm-linux-androideabi-4.7'
+    x86 = 'x86-4.4.3'
+    #prebuilt = 'prebuilt\\windows\\bin'    
+    prebuilt = 'prebuilt/linux-x86_64/bin'
+    arm_toolchain = 'bin'#os.path.join('toolchains', arm_linux, prebuilt)
+    x86_toolchain = os.path.join('toolchains', x86, prebuilt)
+    toolchains = {'armeabi': arm_toolchain,
+                  'armeabi-v7a': arm_toolchain,
+                  'x86': x86_toolchain}
+    prefixes = {'armeabi': 'arm-linux-androideabi-',
+                'armeabi-v7a': 'arm-linux-androideabi-',
+                'x86': 'i686-android-linux-'}
+    toolchain = toolchains[abi]
+    prefix = prefixes[abi]
+
+	
+	
+    tool_prefix = os.path.join(ndk_path, toolchain, prefix)	    
+    env['CC'] =  tool_prefix+'gcc'
+    env['CXX'] = tool_prefix+'g++'
+    env['AS'] = tool_prefix+'as'
+    env['AR'] = tool_prefix+'ar'
+    env['RANLIB'] = tool_prefix+'ranlib'
+    env['OBJCOPY'] = tool_prefix+'objcopy'
+    env['STRIP'] = tool_prefix+'strip'
+
+
+def AndroidSharedLibrary(env, library, sources, **args):
+	# there is always only one element in library
+
+	#libs = env.OriginalSharedLibrary(library, sources)
+	#libs = env.OriginalSharedLibrary(os.path.join('local', library[0]), sources)
+	libs = env.OriginalSharedLibrary('local/'+library[0], sources)
+
+	# didn't get this to run in an simpler version
+	if configuration == "release":
+		result = SCons.Node.NodeList([ File(libs[0].name) ])
+		env.Command(result, libs, [Copy('$TARGET', "$SOURCE"), '$STRIP --strip-unneeded $TARGET'])
+		return result
+	else:
+		return libs
+
+	
+
+opts.Add( 'ANDROID_NDK_STANDALONE_TOOLCHAIN', 'Android NDK path', '/home/far/android/android-ndk-toolchain' )
+ANDROID_NDK_STANDALONE_TOOLCHAIN = opts[ 'ANDROID_NDK_STANDALONE_TOOLCHAIN' ]
+
+opts.Add( 'CPPDEFINES', 'Defines for compiler', '-DLOG4CPP_DISABLE_LOGGING' )
+
+
+abi='armeabi-v7a'
+
+
+# Environment must be explicitly created from PATH since scons would not find the
+# compiler / linker anymore, and must be initialized with the right target platform
+android_common_cflags = ''' -Wall -Wextra -fpic -ffunction-sections -Os -funwind-tables -fno-short-enums -Wno-psabi -fomit-frame-pointer -fno-strict-aliasing -Wa,--noexecstack'''.split()
+android_abi_cflags = {'armeabi': '''-mthumb-interwork -march=armv5te -fstack-protector -mtune=xscale -msoft-float -mthumb -finline-limit=64''', 'armeabi-v7a': ''' -march=armv7-a -mfloat-abi=softfp -fstack-protector -mfpu=vfp -mthumb -finline-limit=64 ''', 'x86': '''  -finline-limit=300 '''}
+arch = 'arch-%s' % abi[0:3]
+
+envOptions = {}
+
+envOptions['CPPPATH'] = []
+envOptions['CPPPATH'] = [ANDROID_NDK_STANDALONE_TOOLCHAIN + '/sysroot/usr/include'] 
+#envOptions['CPPPATH'] = [ANDROID_NDK + '/sources/cxx-stl/gnu-libstdc++/4.4.3/include'] 
+#envOptions['CPPPATH'] += [ANDROID_NDK + '/sources/cxx-stl/gnu-libstdc++/4.4.3/libs/armeabi/include']  
+#envOptions['CPPPATH'] += [target_platform + '/%s/usr/include' % arch]
+
+envOptions["CPPDEFINES"] = []
+if opts.has_key("CPPDEFINES"):
+	envOptions["CPPDEFINES"] = opts['CPPDEFINES'].split()
+	
+envOptions['CPPDEFINES'] += ['-DANDROID']
+
+
+envOptions['LIBS'] = ['c', 'log', 'm', 'dl', 'z']
+envOptions['LIBS'] += ['GLESv2']
+
+
+#envOptions['LIBS'] += ['supc++']
+#have to use shared library, otherwise we get errors with empty strings
+#https://github.com/plattypus/Android-4.0.1_r1.0/blob/master/external/chromium/googleurl/base/string16.h
+#http://gcc.gnu.org/bugzilla/show_bug.cgi?id=24196
+envOptions['LIBS'] += ['gnustl_shared']    
+
+envOptions['LIBPATH'] = []
+envOptions['LIBPATH'] += [ANDROID_NDK_STANDALONE_TOOLCHAIN + '/sysroot/usr/lib'] 
+
+envOptions['CCFLAGS'] = [ '-fpermissive' ]
+#envOptions['CCFLAGS'] = android_common_cflags
+envOptions['CCFLAGS'] += android_abi_cflags[abi].split()
+
+#rtti and exceptions enabled by default
+#envOptions['CXXFLAGS'] = []
+
+envOptions['LDFLAGS'] = []
+envOptions['LDFLAGS'] += ['-Wl,--fix-cortex-a8']
+
+if configuration == 'release':
+	envOptions['CCFLAGS'] += [ '-O3' ] 
+else:
+	envOptions['CPPDEFINES'] += [ '-DEBUG' ] 
+	envOptions['CCFLAGS'] += [ '-g' ] 
+
+
+
+masterEnv = Environment( **envOptions )
+
+# append custom builder to the environment that allows creating a file
+masterEnv.Append( BUILDERS = { 'CreateFile': create_bld, 'Test': test_bld } )
+
+#print masterEnv['SHLINKFLAGS']
+
+
+
+
+add_gnu_tools(masterEnv, abi, ANDROID_NDK_STANDALONE_TOOLCHAIN)
+
+
+#masterEnv['SHOBJSUFFIX'] = '.'+abi+'-os'
+
+
+masterEnv['BUILDERS']['OriginalSharedLibrary'] = masterEnv['BUILDERS']['SharedLibrary']
+masterEnv['BUILDERS']['SharedLibrary'] = AndroidSharedLibrary
+
+
+# setup of build enviroment for linux
+	
+		
+# export auxilliary functions
+Export( 'masterEnv' ,'opts' )
+
+install_prefix = Dir( './../' ).abspath
+
+installDir = ''
+installDir = opts['INSTALL_DIR_X86']
+install_library_prefix = os.path.join ( install_prefix , installDir, abi )
+
+install_binary_prefix = install_library_prefix #os.path.join ( install_prefix , installDir )
+install_component_prefix = os.path.join ( install_library_prefix , 'ubitrack' )
+install_include_prefix = os.path.join ( install_prefix , 'include' )
+install_document_prefix = os.path.join ( install_prefix , 'doc' )
+			
+Export( [ 'install_prefix', 'install_library_prefix', 'install_binary_prefix', 'install_component_prefix', 'install_document_prefix', 'install_include_prefix'] )
+

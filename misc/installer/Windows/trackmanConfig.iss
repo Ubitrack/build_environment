@@ -81,13 +81,13 @@ begin
   end else begin
   if bit32 then
 	begin
-		SaveStringToFile(fileName, 'set path=%UBITRACK_PATH32%;%PATH%', True);
-		SaveStringToFile(fileName, 'copy trackman.conf.32 trackman.conf', True);
+		SaveStringToFile(fileName, 'set path='+ExpandConstant('{app}') +'\UbiTrack\bin32;%PATH%' + #13 + #10, True);
+		SaveStringToFile(fileName, 'copy trackman.conf.32 trackman.conf' + #13 + #10, True);
 	end
 	else
 	begin
-		SaveStringToFile(fileName, 'set path=%UBITRACK_PATH%;%PATH%', True);
-		SaveStringToFile(fileName, 'copy trackman.conf.64 trackman.conf', True);
+		SaveStringToFile(fileName, 'set path='+ExpandConstant('{app}') +'\UbiTrack\bin;%PATH%' + #13 + #10, True);
+		SaveStringToFile(fileName, 'copy trackman.conf.64 trackman.conf' + #13 + #10, True);
 	end;
     SaveStringToFile(fileName, '"'+ javaExePath + '"' + ' ' + '-jar'+ ' ' + 'trackman.jar', True);
   end;

@@ -19,18 +19,20 @@ Export( 'opts' )
 
 # add platform option
 opts.Add( 'PLATFORM', 'Platform configuration (x86 or x64)', 'x64' )
-if opts[ 'PLATFORM' ] not in [ 'x86', 'x64' ]:
+if opts[ 'PLATFORM' ] not in [ 'x86', 'x64', 'android' ]:
 	print "Invalid value specified for option PLATFORM"
 	Exit( 1 )
 platform = opts[ 'PLATFORM' ]
 print 'Platform: ' + platform
 if platform == 'x86':
 	platform_suffix = 'x86'
-else:
+elif platform == 'x64':
 	platform_suffix = 'x64'	
+elif platform == 'android':
+	platform_suffix = 'armeabi-v7a'	
+	
 Export( 'platform' )
 Export( 'platform_suffix' )
-
 
 
 # add configuration options
@@ -45,13 +47,17 @@ if sys.platform == "win32":
 	opts.Add( 'INSTALL_DIR_X86', 'installation directory for x86 builds', 'bin32' )
 	opts.Add( 'INSTALL_DIR_X64', 'installation directory for x64 builds', 'bin' )
 else:
-	opts.Add( 'INSTALL_DIR_X86', 'installation directory for x86 builds', 'lib' )
+	opts.Add( 'INSTALL_DIR_X86', 'installation directory for x86 builds', 'lib32' )
 	opts.Add( 'INSTALL_DIR_X64', 'installation directory for x64 builds', 'lib' )
 
 if sys.platform == "win32":
 	opts.Add( 'CONFIGURATION_SUFFIX_MODE', 'suffix for libraries (["addConfiguration","addPlatform"])', [ 'addConfiguration'] )
+# if the app has the same name as the directory i get an error
+# TODO find cause and fix error
+if platform == "android":
+	opts.Add( 'CONFIGURATION_SUFFIX_MODE', 'suffix for libraries (["addConfiguration","addPlatform"])', [ 'addConfiguration'] )
 else:
-	opts.Add( 'CONFIGURATION_SUFFIX_MODE', 'suffix for libraries (["addConfiguration","addPlatform"])', ['addPlatform', 'addConfiguration' ] )
+	opts.Add( 'CONFIGURATION_SUFFIX_MODE', 'suffix for libraries (["addConfiguration","addPlatform"])', [ 'addConfiguration' ] )
 
 configuration_suffix = ''
 
@@ -61,12 +67,13 @@ if 'addConfiguration' in opts[ 'CONFIGURATION_SUFFIX_MODE' ]:
 	else:
 		configuration_suffix = '-d'
 if 'addPlatform' in opts[ 'CONFIGURATION_SUFFIX_MODE' ]:
-	if platform_suffix == 'x64':
-		configuration_suffix = '_x64'+configuration_suffix
-	else:
-		configuration_suffix = '_x86'+configuration_suffix
+	configuration_suffix = '_'+platform_suffix+configuration_suffix
+
+
+
 Export( 'configuration' )
 Export( 'configuration_suffix' )
+
 
 
 # import some helper functions
@@ -74,40 +81,17 @@ SConscript ( '#/config/SConsUtils' )
 Import( 'globSourceFiles', 'globDirectories', 'pathListToStringList', 'toTopLevelPath', 'mergeOptions', 'installLibs', 'create_bld', 'test_bld', 'getCurrentPath')
 
 
-
 #
 # CREATE MASTER ENVIRONMENT
-#
-
-# Environment must be explicitly created from PATH since scons would not find the
-# compiler / linker anymore, and must be initialized with the right target platform
-envOptions = {}
-envOptions[ "ENV" ] = { 'PATH' : os.environ['PATH'] }
-if platform == 'x86':
-	envOptions[ "TARGET_ARCH"] = 'x86'
-else:
-	envOptions[ "TARGET_ARCH"] = 'x86_64'
-
-if sys.platform == "win32":
-	opts.Add( 'FORCE_MSVC_VERSION', 'Forces scons to use a certain MS Visual Studio Version', 'false' )
-	if opts['FORCE_MSVC_VERSION'] != 'false' :
-		print "Forcing MS Visual Studio Version to " + opts[ 'FORCE_MSVC_VERSION' ]
-		envOptions[ "MSVC_VERSION" ] = opts[ 'FORCE_MSVC_VERSION' ]
-
-	envOptions[ "MSVS_USE_MFC_DIRS" ] = 1 # needed by drivers that use COM
-masterEnv = Environment( **envOptions )
-
-# append custom builder to the environment that allows creating a file
-masterEnv.Append( BUILDERS = { 'CreateFile': create_bld, 'Test': test_bld } )
-
-
-#
 # COMPILER SPECIFIC OPTIONS
 #
-Export( 'masterEnv')
 # MICRSOSOFT VS COMPILER
-if 'msvc' in masterEnv[ 'TOOLS' ]:
-	SConscript ( '#/config/UbiMSVCEnvSetup' )			
+#if 'msvc' in masterEnv[ 'TOOLS' ]:
+if sys.platform == 'win32':
+	SConscript ( '#/config/UbiMSVCEnvSetup' )
+#android on linux	
+elif platform == 'android':
+	SConscript ( '#/config/UbiLinuxAndroidEnvSetup' )			
 # LINUX
 elif sys.platform.startswith( 'linux' ):
 	SConscript ( '#/config/UbiLinuxEnvSetup' )
@@ -125,21 +109,7 @@ if 'gcc' in masterEnv[ 'TOOLS' ]:
 
 # export the build environment
 Export( 'masterEnv' )
-install_prefix = Dir( '.' ).abspath
 
-installDir = ''
-if platform == 'x64':
-	installDir = opts['INSTALL_DIR_X64']
-	install_library_prefix = os.path.join ( install_prefix , 'lib' )
-else:
-	installDir = opts['INSTALL_DIR_X86']
-	install_library_prefix = os.path.join ( install_prefix , 'lib32' )
-install_binary_prefix = os.path.join ( install_prefix , installDir )
-install_component_prefix = os.path.join ( install_binary_prefix , 'ubitrack' )
-install_include_prefix = os.path.join ( install_prefix , 'include' )
-install_document_prefix = os.path.join ( install_prefix , 'doc' )
-			
-Export( [ 'install_prefix', 'install_library_prefix', 'install_binary_prefix', 'install_component_prefix', 'install_document_prefix', 'install_include_prefix'] )
 
 
 
@@ -201,11 +171,10 @@ buildPath = "build"
 # look for enviroment variable CUSTOM_BUILD_PATH and set the build path if available
 # can be used for example to speed up your build process using a ram drive
 if os.environ.has_key('CUSTOM_BUILD_PATH'):
-	bd = os.environ['CUSTOM_BUILD_PATH']
-if platform == 'x86':
-	buildPath = os.path.join( buildPath, "x86" )
-else:
-	buildPath = os.path.join( buildPath, "x64" )	
+	buildPath = os.environ['CUSTOM_BUILD_PATH']
+
+buildPath = os.path.join( buildPath, platform_suffix )
+
 	
 if configuration == 'release':
 	buildPath = os.path.join( buildPath, "rls" )
