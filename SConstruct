@@ -95,6 +95,9 @@ elif platform == 'android':
 # LINUX
 elif sys.platform.startswith( 'linux' ):
 	SConscript ( '#/config/UbiLinuxEnvSetup' )
+# MacOS
+elif sys.platform == 'darwin':
+	SConscript ( '#/config/UbiMacOSEnvSetup' )
 else:
 	print "System not supported. Build system only supports Windows or Linux"
 	Exit( 1 )

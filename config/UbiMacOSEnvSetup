@@ -1,0 +1,59 @@
+import glob
+import sys
+import os
+import config
+import string
+import SCons
+
+Import( '*')
+
+# Environment must be explicitly created from PATH since scons would not find the
+# compiler / linker anymore, and must be initialized with the right target platform
+envOptions = {}
+envOptions[ "ENV" ] = { 'PATH' : os.environ['PATH'] }
+
+	
+opts.Add( 'CPPDEFINES', 'Defines for compiler', '' )
+
+if opts.has_key("CPPDEFINES"):
+	envOptions["CPPDEFINES"] = opts['CPPDEFINES'].split()
+
+masterEnv = Environment( **envOptions )
+
+# append custom builder to the environment that allows creating a file
+masterEnv.Append( BUILDERS = { 'CreateFile': create_bld, 'Test': test_bld } )
+
+
+# setup of build enviroment for linux
+if platform == 'x86':
+	masterEnv.Append( CCFLAGS = [ '-Wall', '-march=i386' ] )
+elif platform == 'x64':
+	masterEnv.Append( CCFLAGS = [ '-Wall', '-march=x86-64' ] )
+
+
+if release_build:
+	masterEnv.Append( CCFLAGS = [ '-O3' ] )
+else:
+	masterEnv.Append( CPPDEFINES = [ '_DEBUG' ] )
+	masterEnv.Append( CCFLAGS = [ '-lldb' ] )
+			
+# export auxilliary functions
+Export( 'masterEnv' )
+
+install_prefix = Dir( './../' ).abspath
+
+installDir = ''
+if platform == 'x64':
+	installDir = opts['INSTALL_DIR_X64']
+
+else:
+	installDir = opts['INSTALL_DIR_X86']
+
+install_library_prefix = os.path.join ( install_prefix , installDir )
+
+install_binary_prefix = os.path.join ( install_prefix , installDir )
+install_component_prefix = os.path.join ( install_binary_prefix , 'ubitrack' )
+install_include_prefix = os.path.join ( install_prefix , 'include' )
+install_document_prefix = os.path.join ( install_prefix , 'doc' )
+			
+Export( [ 'install_prefix', 'install_library_prefix', 'install_binary_prefix', 'install_component_prefix', 'install_document_prefix', 'install_include_prefix'] )
