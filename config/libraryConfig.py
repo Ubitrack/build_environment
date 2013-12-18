@@ -70,6 +70,9 @@ class AbstractLibraryFinder:
 			elif sys.platform.startswith( 'linux' ):
 				libEnding = '.so'
 				libPrefix = 'lib'
+			elif sys.platform == 'darwin':
+				libEnding = '.dylib'
+				libPrefix = 'lib'
 			else :
 				libEnding = '.lib'
 				libPrefix = ''

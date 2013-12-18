@@ -31,11 +31,11 @@ elif platform == 'x64':
 	masterEnv.Append( CCFLAGS = [ '-Wall', '-march=x86-64' ] )
 
 
-if release_build:
+if configuration == 'release':
 	masterEnv.Append( CCFLAGS = [ '-O3' ] )
 else:
 	masterEnv.Append( CPPDEFINES = [ '_DEBUG' ] )
-	masterEnv.Append( CCFLAGS = [ '-lldb' ] )
+	masterEnv.Append( CCFLAGS = [ '-ggdb' ] )
 			
 # export auxilliary functions
 Export( 'masterEnv' )
