@@ -2,7 +2,7 @@
 ; SEE THE DOCUMENTATION FOR DETAILS ON CREATING INNO SETUP SCRIPT FILES!
 
 #define MyAppName "UbiTrack"
-#define MyAppVersion "0.2 beta"
+#define MyAppVersion "1.0"
 #define MyAppPublisher "Technische Universitat München"
 #define MyAppURL "http://campar.in.tum.de/UbiTrack"
 
@@ -21,7 +21,7 @@ AppUpdatesURL={#MyAppURL}
 DefaultDirName=C:\libraries\{#MyAppName}
 DefaultGroupName={#MyAppName}
 AllowNoIcons=true
-LicenseFile=..\..\lgpl.txt
+LicenseFile=..\..\..\LICENSE
 OutputDir=.\
 OutputBaseFilename=UbiTrack_Installer
 Compression=lzma/Max
