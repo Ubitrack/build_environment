@@ -452,11 +452,14 @@ macro(ut_create_module)
 	add_library(${the_module} ${UBITRACK_MODULE_TYPE} ${UBITRACK_MODULE_${the_module}_HEADERS} ${UBITRACK_MODULE_${the_module}_SOURCES})
 	#set_target_properties(${the_module} PROPERTIES COMPILE_DEFINITIONS UBITRACK_NOSTL)
 
+	set(UBITRACK_MODULE_${the_module}_COMPILE_DEFINITIONS)
+	
 	if(NOT "${ARGN}" STREQUAL "SKIP_LINK")
 	  #MESSAGE(STATUS "${the_module} ${UBITRACK_MODULE_${the_module}_DEPS} ${UBITRACK_MODULE_${the_module}_DEPS_EXT} ${UBITRACK_LINKER_LIBS} ${IPP_LIBS} ${ARGN}")
-          set(UBITRACK_MODULE_${the_module}_LINK_LIBRARIES ${UBITRACK_MODULE_${the_module}_DEPS} ${UBITRACK_MODULE_${the_module}_DEPS_EXT} ${UBITRACK_LINKER_LIBS} ${IPP_LIBS} ${ARGN})
-	  target_link_libraries(${the_module} ${UBITRACK_MODULE_${the_module}_DEPS} ${UBITRACK_MODULE_${the_module}_DEPS_EXT} ${UBITRACK_LINKER_LIBS} ${IPP_LIBS} ${ARGN})
+      set(UBITRACK_MODULE_${the_module}_LINK_LIBRARIES ${UBITRACK_MODULE_${the_module}_DEPS} ${UBITRACK_MODULE_${the_module}_DEPS_EXT} ${UBITRACK_LINKER_LIBS} ${IPP_LIBS} ${ARGN})
 
+	  target_link_libraries(${the_module} ${UBITRACK_MODULE_${the_module}_DEPS} ${UBITRACK_MODULE_${the_module}_DEPS_EXT} ${UBITRACK_LINKER_LIBS} ${IPP_LIBS} ${ARGN})
+	  
 	  #if (HAVE_CUDA)
 	  #  target_link_libraries(${the_module} ${CUDA_LIBRARIES} ${CUDA_npp_LIBRARY})
 	  #endif()
@@ -467,7 +470,11 @@ macro(ut_create_module)
 
 	add_dependencies(ubitrack_modules ${the_module})
 
-	set_target_properties(${the_module} PROPERTIES
+    if(ENABLE_SOLUTION_FOLDERS)
+      set_target_properties(${the_module} PROPERTIES FOLDER "modules")
+    endif()
+
+    set_target_properties(${the_module} PROPERTIES
 	  OUTPUT_NAME "${the_module}${UBITRACK_DLLVERSION}"
 	  DEBUG_POSTFIX "${UBITRACK_DEBUG_POSTFIX}"
 	  ARCHIVE_OUTPUT_DIRECTORY ${LIBRARY_OUTPUT_PATH}
@@ -489,11 +496,18 @@ macro(ut_create_module)
 	if(BUILD_SHARED_LIBS)
 	  if(MSVC)
 	    string(TOUPPER "${the_module}" the_module_upper)
-	    #set_target_properties(${the_module} PROPERTIES DEFINE_SYMBOL "${the_module_upper}_DLL")
-	    add_definitions( "-D${the_module_upper}_DLL")
+		set(UBITRACK_MODULE_${the_module}_COMPILE_DEFINITIONS ${UBITRACK_MODULE_${the_module}_COMPILE_DEFINITIONS} "${the_module_upper}_DLL")
 	  endif()
 	endif()
 
+	if (NOT Boost_USE_STATIC_LIBS)
+	if(MSVC)
+	  # force dynamic linking of boost libs on windows ..
+	  set(UBITRACK_MODULE_${the_module}_COMPILE_DEFINITIONS ${UBITRACK_MODULE_${the_module}_COMPILE_DEFINITIONS} "BOOST_ALL_DYN_LINK")
+	endif(MSVC)
+	endif (NOT Boost_USE_STATIC_LIBS)
+
+	
 	if(MSVC)
 	  if(CMAKE_CROSSCOMPILING)
 	    set_target_properties(${the_module} PROPERTIES LINK_FLAGS "/NODEFAULTLIB:secchk")
@@ -507,6 +521,9 @@ macro(ut_create_module)
 	  endforeach()
     endif()
 
+	#set compile definitions
+    set_target_properties(${the_module} PROPERTIES COMPILE_DEFINITIONS "${UBITRACK_MODULE_${the_module}_COMPILE_DEFINITIONS}")
+	
 	install(TARGETS ${the_module}
 	  RUNTIME DESTINATION bin COMPONENT main
 	  LIBRARY DESTINATION ${UBITRACK_LIB_INSTALL_PATH} COMPONENT main
@@ -599,6 +616,97 @@ macro(ut_check_dependencies)
     endif()
   endforeach()
 endmacro()
+
+#auxiliary macro to parse arguments of ocv_add_accuracy_tests and ocv_add_perf_tests commands
+macro(__ut_parse_test_sources tests_type)
+  set(UBITRACK_${tests_type}_${the_module}_SOURCES "")
+  set(UBITRACK_${tests_type}_${the_module}_DEPS "")
+  set(__file_group_name "")
+  set(__file_group_sources "")
+  foreach(arg "DEPENDS_ON" ${ARGN} "FILES")
+    if(arg STREQUAL "FILES")
+      set(__currentvar "__file_group_sources")
+      if(__file_group_name AND __file_group_sources)
+        source_group("${__file_group_name}" FILES ${__file_group_sources})
+        list(APPEND UBITRACK_${tests_type}_${the_module}_SOURCES ${__file_group_sources})
+      endif()
+      set(__file_group_name "")
+      set(__file_group_sources "")
+    elseif(arg STREQUAL "DEPENDS_ON")
+      set(__currentvar "UBITRACK_TEST_${the_module}_DEPS")
+    elseif("${__currentvar}" STREQUAL "__file_group_sources" AND NOT __file_group_name)
+      set(__file_group_name "${arg}")
+    else()
+      list(APPEND ${__currentvar} "${arg}")
+    endif()
+  endforeach()
+  unset(__file_group_name)
+  unset(__file_group_sources)
+  unset(__currentvar)
+endmacro()
+
+# this is a command for adding UbiTrack tests to the module
+# ut_add_module_tests([FILES <source group name> <list of sources>] [DEPENDS_ON] <list of extra dependencies>)
+macro(ut_add_module_tests)
+  set(test_path "${CMAKE_CURRENT_SOURCE_DIR}/tests")
+  ut_check_dependencies(${test_deps})
+  if(BUILD_TESTS AND EXISTS "${test_path}")
+    __ut_parse_test_sources(TEST ${ARGN})
+
+    # opencv_highgui is required for imread/imwrite
+    # set(test_deps ${the_module} opencv_ts opencv_highgui ${OPENCV_TEST_${the_module}_DEPS})
+    ut_check_dependencies(${test_deps})
+
+    if(UT_DEPENDENCIES_FOUND)
+      set(the_target "ubitrack_test_${name}")
+      #project(${the_target})
+
+	  set(UBITRACK_MODULE_TEST_${the_target}_COMPILE_DEFINITIONS)
+      ut_module_include_directories(${test_deps} "${test_path}")
+
+      if(NOT UBITRACK_TEST_${the_module}_SOURCES)
+        file(GLOB test_srcs "${test_path}/*.cpp" "${test_path}/*/*.cpp" "${test_path}/*/*/*.cpp")
+        file(GLOB test_hdrs "${test_path}/*.hpp" "${test_path}/*.h" "${test_path}/*/*.hpp" "${test_path}/*/*.h" "${test_path}/*/*/*.hpp" "${test_path}/*/*/*.h")
+        source_group("Src" FILES ${test_srcs})
+        source_group("Include" FILES ${test_hdrs})
+        set(UBITRACK_TEST_${the_module}_SOURCES ${test_srcs} ${test_hdrs})
+      endif()
+
+      add_executable(${the_target} ${UBITRACK_TEST_${the_module}_SOURCES})
+      target_link_libraries(${the_target} ${the_module} ${UBITRACK_MODULE_${the_module}_DEPS} ${UBITRACK_MODULE_${the_module}_DEPS_EXT} ${UBITRACK_LINKER_LIBS} ${IPP_LIBS})
+      add_dependencies(ubitrack_tests ${the_target})
+	  
+      # Additional target properties
+      set_target_properties(${the_target} PROPERTIES
+        DEBUG_POSTFIX "${UBITRACK_DEBUG_POSTFIX}"
+        RUNTIME_OUTPUT_DIRECTORY "${EXECUTABLE_OUTPUT_PATH}"
+      )
+
+  	  if(MSVC)
+	    # force dynamic linking of boost libs on windows ..
+	    set(UBITRACK_MODULE_TEST_${the_target}_COMPILE_DEFINITIONS ${UBITRACK_MODULE_TEST_${the_target}_COMPILE_DEFINITIONS} "BOOST_TEST_NO_LIB")
+	  endif(MSVC)
+	  
+      if(ENABLE_SOLUTION_FOLDERS)
+        set_target_properties(${the_target} PROPERTIES FOLDER "tests")
+      endif()
+
+	  #set compile definitions
+      set_target_properties(${the_target} PROPERTIES COMPILE_DEFINITIONS "${UBITRACK_MODULE_TEST_${the_target}_COMPILE_DEFINITIONS}")
+
+      enable_testing()
+      get_target_property(LOC ${the_target} LOCATION)
+      add_test(${the_target} "${LOC}")
+
+      #ut_add_precompiled_headers(${the_target})
+    else(UT_DEPENDENCIES_FOUND)
+      #TODO: warn about unsatisfied dependencies
+    endif(UT_DEPENDENCIES_FOUND)
+  endif()
+endmacro()
+
+
+
 
 # internal macro; finds all link dependencies of the module
 # should be used at the end of CMake processing

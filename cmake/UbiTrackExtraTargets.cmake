@@ -11,3 +11,11 @@
 # target building all UbiTrack modules
 # ----------------------------------------------------------------------------
 add_custom_target(ubitrack_modules)
+
+
+if(BUILD_TESTS)
+  add_custom_target(ubitrack_tests)
+  if(ENABLE_SOLUTION_FOLDERS)
+    set_target_properties(ubitrack_tests PROPERTIES FOLDER "extra")
+  endif()
+endif()

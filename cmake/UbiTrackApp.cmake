@@ -181,6 +181,8 @@ endmacro()
 macro(ut_create_executable)
 	add_executable(${the_app} ${UBITRACK_APP_${the_app}_HEADERS} ${UBITRACK_APP_${the_app}_SOURCES})
 
+	set(UBITRACK_APP_${the_module}_COMPILE_DEFINITIONS)
+
 	#MESSAGE(STATUS "${the_app} ${UBITRACK_APP_${the_app}_DEPS} ${UBITRACK_APP_${the_app}_DEPS_EXT} ${UBITRACK_LINKER_LIBS} ${IPP_LIBS} ${ARGN}")
 	target_link_libraries(${the_app} ${UBITRACK_APP_${the_app}_DEPS} ${UBITRACK_APP_${the_app}_DEPS_EXT} ${UBITRACK_LINKER_LIBS} ${IPP_LIBS} ${ARGN})
 
@@ -206,7 +208,16 @@ macro(ut_create_executable)
 	  foreach(_symb ${UBITRACK_DEFINES})
 		  set_target_properties(${the_app} PROPERTIES DEFINE_SYMBOL ${_symb})
 	  endforeach()
-	
+
+	if (NOT Boost_USE_STATIC_LIBS)
+	if(MSVC)
+	  # force dynamic linking of boost libs on windows ..
+	  set(UBITRACK_APP_${the_app}_COMPILE_DEFINITIONS ${UBITRACK_APP_${the_app}_COMPILE_DEFINITIONS} "BOOST_ALL_DYN_LINK")
+	endif(MSVC)
+	endif (NOT Boost_USE_STATIC_LIBS)
+
+    set_target_properties(${the_app} PROPERTIES COMPILE_DEFINITIONS "${UBITRACK_APP_${the_app}_COMPILE_DEFINITIONS}")
+	  
 	if(MSVC)
 	  if(CMAKE_CROSSCOMPILING)
 	    set_target_properties(${the_app} PROPERTIES LINK_FLAGS "/NODEFAULTLIB:secchk")
