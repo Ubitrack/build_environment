@@ -112,10 +112,19 @@ if(APPLE)
 endif(APPLE)
 
 # Build Options go here
-#UT_OPTION(WITH_1394           "Include IEEE1394 support"                    ON   IF (UNIX AND NOT ANDROID AND NOT IOS) )
-OPTION(GENERATE_METADATA    "Generate Metadata for Modules and Components"    OFF)
-OPTION(COMPILE_WITH_CXX11   "Compile UbiTrack using C++11 (GCC)"    OFF)
+UT_OPTION(GENERATE_METADATA    "Generate Metadata for Modules and Components"    OFF)
+UT_OPTION(BUILD_TESTS          "Build regression tests"                          ON)
 
+UT_OPTION(ENABLE_PRECOMPILED_HEADERS "Use precompiled headers"                                  ON )
+UT_OPTION(ENABLE_SOLUTION_FOLDERS    "Solution folder in Visual Studio or in other IDEs"        ${ENABLE_SOLUTION_FOLDERS0} IF (CMAKE_VERSION VERSION_GREATER "2.8.0") )
+UT_OPTION(COMPILE_WITH_CXX11   "Compile UbiTrack using C++11 (GCC)"    OFF)
+
+
+if(MSVC_IDE OR CMAKE_GENERATOR MATCHES Xcode)
+  set(ENABLE_SOLUTION_FOLDERS0 ON)
+else()
+  set(ENABLE_SOLUTION_FOLDERS0 OFF)
+endif()
 
 # Activate C++11 mode if available
 IF(COMPILE_WITH_CXX11)

@@ -182,8 +182,17 @@ macro(ut_create_multi_component)
 
 		add_library(${fname} SHARED ${UBITRACK_COMPONENT_${the_component}_HEADERS} ${fpath})
 
-		#MESSAGE(STATUS "${the_component} ${UBITRACK_COMPONENT_${the_component}_DEPS} ${UBITRACK_COMPONENT_${the_component}_DEPS_EXT} ${UBITRACK_LINKER_LIBS} ${IPP_LIBS} ${ARGN}")
-		target_link_libraries(${fname} ${UBITRACK_COMPONENT_${the_component}_DEPS} ${UBITRACK_COMPONENT_${the_component}_DEPS_EXT} ${UBITRACK_LINKER_LIBS} ${IPP_LIBS} ${ARGN})
+		set(UBITRACK_COMPONENT_${fname}_COMPILE_DEFINITIONS)
+		
+		if (NOT Boost_USE_STATIC_LIBS)
+		if(MSVC)
+		  # force dynamic linking of boost libs on windows ..
+		  set_target_properties(${fname} PROPERTIES COMPILE_DEFINITIONS "BOOST_ALL_DYN_LINK")
+		endif(MSVC)
+		endif (NOT Boost_USE_STATIC_LIBS)
+
+	  #MESSAGE(STATUS "${the_component} ${UBITRACK_COMPONENT_${the_component}_DEPS} ${UBITRACK_COMPONENT_${the_component}_DEPS_EXT} ${UBITRACK_LINKER_LIBS} ${IPP_LIBS} ${ARGN}")
+  	  target_link_libraries(${fname} ${UBITRACK_COMPONENT_${the_component}_DEPS} ${UBITRACK_COMPONENT_${the_component}_DEPS_EXT} ${UBITRACK_LINKER_LIBS} ${IPP_LIBS} ${ARGN})
 
 		set_target_properties(${fname} PROPERTIES
 		  OUTPUT_NAME "${fname}"
@@ -221,6 +230,15 @@ macro(ut_create_multi_component)
 		  set_target_properties(${fname} PROPERTIES LINK_FLAGS "/NODEFAULTLIB:libc /DEBUG")
 		endif()
 
+		if (NOT Boost_USE_STATIC_LIBS)
+		if(MSVC)
+		  # force dynamic linking of boost libs on windows ..
+		  set(UBITRACK_COMPONENT_${fname}_COMPILE_DEFINITIONS ${UBITRACK_COMPONENT_${fname}_COMPILE_DEFINITIONS} "BOOST_ALL_DYN_LINK")
+		endif(MSVC)
+		endif (NOT Boost_USE_STATIC_LIBS)
+		
+	    set_target_properties(${fname} PROPERTIES COMPILE_DEFINITIONS "${UBITRACK_COMPONENT_${fname}_COMPILE_DEFINITIONS}")
+
 		install(TARGETS ${fname}
 		  RUNTIME DESTINATION ${UBITRACK_COMPONENT_BIN_INSTALL_PATH} COMPONENT main
 		  LIBRARY DESTINATION ${UBITRACK_COMPONENT_INSTALL_PATH} COMPONENT main
@@ -246,8 +264,11 @@ endmacro()
 macro(ut_create_single_component)
 	add_library(${the_component} SHARED ${UBITRACK_COMPONENT_${the_component}_HEADERS} ${UBITRACK_COMPONENT_${the_component}_SOURCES})
 
+	set(UBITRACK_COMPONENT_${the_component}_COMPILE_DEFINITIONS)
+	
 	#MESSAGE(STATUS "${the_component} ${UBITRACK_COMPONENT_${the_component}_DEPS} ${UBITRACK_COMPONENT_${the_component}_DEPS_EXT} ${UBITRACK_LINKER_LIBS} ${IPP_LIBS} ${ARGN}")
 	set(UBITRACK_COMPONENT_${the_component}_LINK_LIBRARIES ${UBITRACK_COMPONENT_${the_component}_DEPS} ${UBITRACK_COMPONENT_${the_component}_DEPS_EXT} ${UBITRACK_LINKER_LIBS} ${IPP_LIBS} ${ARGN})
+
   	target_link_libraries(${the_component} ${UBITRACK_COMPONENT_${the_component}_DEPS} ${UBITRACK_COMPONENT_${the_component}_DEPS_EXT} ${UBITRACK_LINKER_LIBS} ${IPP_LIBS} ${ARGN})
 
 	set_target_properties(${the_component} PROPERTIES
@@ -279,6 +300,15 @@ macro(ut_create_single_component)
 	  endif()
 	endif()
 
+	if (NOT Boost_USE_STATIC_LIBS)
+	if(MSVC)
+	  # force dynamic linking of boost libs on windows ..
+	  set(UBITRACK_COMPONENT_${the_component}_COMPILE_DEFINITIONS ${UBITRACK_COMPONENT_${the_component}_COMPILE_DEFINITIONS} "BOOST_ALL_DYN_LINK")
+	endif(MSVC)
+	endif (NOT Boost_USE_STATIC_LIBS)
+
+    set_target_properties(${the_component} PROPERTIES COMPILE_DEFINITIONS "${UBITRACK_COMPONENT_${the_component}_COMPILE_DEFINITIONS}")
+	
 	if(MSVC)
 	  if(CMAKE_CROSSCOMPILING)
 	    set_target_properties(${the_component} PROPERTIES LINK_FLAGS "/NODEFAULTLIB:secchk")
