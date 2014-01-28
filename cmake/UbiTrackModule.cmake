@@ -673,7 +673,7 @@ macro(ut_add_module_tests)
       endif()
 
       add_executable(${the_target} ${UBITRACK_TEST_${the_module}_SOURCES})
-      target_link_libraries(${the_target} ${the_module} ${UBITRACK_MODULE_${the_module}_DEPS} ${UBITRACK_MODULE_${the_module}_DEPS_EXT} ${UBITRACK_LINKER_LIBS} ${IPP_LIBS})
+      target_link_libraries(${the_target} ${the_module} ${UBITRACK_MODULE_${the_module}_DEPS} ${UBITRACK_MODULE_${the_module}_DEPS_EXT} ${UBITRACK_LINKER_LIBS} ${IPP_LIBS} ${ARGN})
       add_dependencies(ubitrack_tests ${the_target})
 	  
       # Additional target properties
