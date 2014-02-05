@@ -178,8 +178,11 @@ if not os.path.exists(buildPathParent):
 	Exit(1)
 buildPath = opts[ 'BUILD_PATH' ]
 
-buildPath = os.path.join( buildPath, platform_suffix )
-
+# specify the build path depending on the platform we are building for
+if platform == 'android':
+	buildPath = os.path.join( buildPath, platform_suffix )
+else:
+	buildPath = os.path.join( buildPath, sys.platform + platform_suffix )
 	
 if configuration == 'release':
 	buildPath = os.path.join( buildPath, "rls" )
