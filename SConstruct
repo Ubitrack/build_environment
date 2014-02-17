@@ -18,7 +18,7 @@ opts = config.NoEnvOptions( 'config.cache', ARGUMENTS )
 Export( 'opts' )
 
 # add platform option
-opts.Add( 'PLATFORM', 'Platform configuration (x86 or x64)', 'x64' )
+opts.Add( 'PLATFORM', 'Platform configuration (x86, x64 or android)', 'x64' )
 if opts[ 'PLATFORM' ] not in [ 'x86', 'x64', 'android' ]:
 	print "Invalid value specified for option PLATFORM"
 	Exit( 1 )
@@ -95,6 +95,9 @@ elif platform == 'android':
 # LINUX
 elif sys.platform.startswith( 'linux' ):
 	SConscript ( '#/config/UbiLinuxEnvSetup' )
+# MacOS
+elif sys.platform == 'darwin':
+	SConscript ( '#/config/UbiMacOSEnvSetup' )
 else:
 	print "System not supported. Build system only supports Windows or Linux"
 	Exit( 1 )
@@ -155,8 +158,6 @@ masterEnv.Append(**global_settings)
 # save configuration values
 opts.Save( 'config.cache' )
 
-
-
 	
 # generate help text for command line
 Help( opts.GenerateHelpText() )
@@ -167,14 +168,21 @@ Help( opts.GenerateHelpText() )
 #
 
 # set build directory paths
-buildPath = "build"
-# look for enviroment variable CUSTOM_BUILD_PATH and set the build path if available
+# look for BUILD_PATH variable  and set the build path if available
 # can be used for example to speed up your build process using a ram drive
-if os.environ.has_key('CUSTOM_BUILD_PATH'):
-	buildPath = os.environ['CUSTOM_BUILD_PATH']
+opts.Add( 'BUILD_PATH', 'Build path for intermediate compiler output', 'build' )
+buildPathParent = os.path.dirname(os.path.abspath(opts[ 'BUILD_PATH' ]))
 
-buildPath = os.path.join( buildPath, platform_suffix )
+if not os.path.exists(buildPathParent):
+	print 'build path "' + buildPathParent + '" does not exist'
+	Exit(1)
+buildPath = opts[ 'BUILD_PATH' ]
 
+# specify the build path depending on the platform we are building for
+if platform == 'android':
+	buildPath = os.path.join( buildPath, platform_suffix )
+else:
+	buildPath = os.path.join( buildPath, sys.platform + platform_suffix )
 	
 if configuration == 'release':
 	buildPath = os.path.join( buildPath, "rls" )
@@ -191,9 +199,9 @@ for module in ubitrackBuildOrder:
 	success = True
 	if os.path.exists(currentFile):
 		success = SConscript( currentFile, variant_dir = os.path.join( buildPath, module, 'src' ), duplicate = 0 )
-	if not success:
-		print 'Failed to build', module, '. '#Exiting.
-		#Exit ( 1 )
+	#if not success:
+	#	print 'Failed to build', module, '. '#Exiting.
+	#	Exit ( 1 )
 
 for module in modules:
 	# Look for optional 3rd party components inside the modules
@@ -202,8 +210,8 @@ for module in modules:
 		SConscript( thirdPartyPath, variant_dir = os.path.join( buildPath, module, '3rd' ), duplicate = 0 )
 	# Compile the source code	
 	success = SConscript( os.path.join (module, 'src', 'SConscript'), variant_dir = os.path.join( buildPath, module, 'src' ), duplicate = 0 )
-	if not success:
-		print 'Failed to build', module, '. '#Exiting.
+	#if not success:
+	#	print 'Failed to build', module, '. '#Exiting.
 		#Exit ( 1 )
 
 #
