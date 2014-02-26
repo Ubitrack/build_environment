@@ -57,8 +57,7 @@ def AndroidSharedLibrary(env, library, sources, **args):
 		return libs
 
 	
-
-opts.Add( 'ANDROID_NDK_STANDALONE_TOOLCHAIN', 'Android NDK path', '/home/far/android/android-ndk-toolchain' )
+opts.Add( 'ANDROID_NDK_STANDALONE_TOOLCHAIN', 'Android NDK path', os.path.expanduser('~') + '/android/android-ndk-toolchain' )
 ANDROID_NDK_STANDALONE_TOOLCHAIN = opts[ 'ANDROID_NDK_STANDALONE_TOOLCHAIN' ]
 
 opts.Add( 'CPPDEFINES', 'Defines for compiler', '-DLOG4CPP_DISABLE_LOGGING' )
