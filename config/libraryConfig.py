@@ -125,13 +125,6 @@ class SimpleLibraryConfiguration:
 
 standardLibFinder = LibraryFinderChain
 standardLibConfig = SimpleLibraryConfiguration
-		
-#if sys.platform == 'win32':
-	#standardLibFinder = LibraryFinderChain
-	#standardLibConfig = SimpleLibraryConfiguration
-#else:
-	#standardLibFinder = LibraryFinderChain
-	#standardLibConfig = SimpleLibraryConfiguration
 
 Export('standardLibFinder', 'standardLibConfig')
 

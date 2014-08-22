@@ -116,6 +116,21 @@ def setupIncludeInstall(env, sources, suffix, aliasName = 'includes'):
 	Alias( [ 'includes', 'all', 'install-all', 'install-'+aliasName ], env.Install(instDir, sources ) )	
 	return
 	
+# setup the build targets for the document folder	
+def setupIncludeInstallAll(env, docRoot, prefix='.h', installRelative = '.', aliasName = 'includes'):
+	headerDirs = globDirectories(  os.path.join( docRoot, '*' ))
+	headerFiles = glob.glob( os.path.join(getCurrentPath(), docRoot, '*'+prefix ) )	
+	instDir = os.path.join(install_include_prefix , installRelative, docRoot)		
+	for n in headerDirs:				
+		setupIncludeInstallAll(env, n, prefix, installRelative, aliasName)
+        
+	for n in headerFiles:		
+		instFile = env.Install(instDir, n )					
+		Alias( [ 'includes', 'all', 'install-all', 'install-'+aliasName ],instFile)	
+		
+		
+	return
+	
 # generate console output that describes how to link against the library	
 def generateHelp(options):
 	keys = ['CPPDEFINES', 'CPPPATH', 'LIBPATH', 'LIBS']
@@ -144,4 +159,4 @@ def generateHelp(options):
 	Help( compileAndLinkHelp )
 
 
-Export('createVisualStudioProject', 'setupComponentBuild',  'setupSingleComponentBuild' ,'setupLibraryBuild', 'setupStaticLibraryBuild', 'generateHelp', 'setupAppBuild', 'setupDocInstall', 'setupIncludeInstall', 'setupAppLibBuild')
+Export('createVisualStudioProject', 'setupComponentBuild',  'setupSingleComponentBuild' ,'setupLibraryBuild', 'setupStaticLibraryBuild', 'generateHelp', 'setupAppBuild', 'setupDocInstall', 'setupIncludeInstall', 'setupAppLibBuild', 'setupIncludeInstallAll')

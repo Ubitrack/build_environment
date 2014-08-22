@@ -1,26 +1,1 @@
-import os
-import sys
-import ConfigParser
-
-SConscript ( '#/config/libraryFinder/AbstractLibraryFinder.py' )
-
-Import( '*')
-
-
-class MacOSHomebrewLibraryFinder(AbstractLibraryFinder):
-	def __init__(self, libName, checkLibParameters, includePath=[], libPath=[] ):
-		AbstractLibraryFinder.__init__(self, libName, checkLibParameters)	
-	
-	def checkForLibraries(self):
-		print 'Platform:'+platform
-		print 'Configuration:'+ configuration
-		print 'Search here for the settings of library:' + self.libName
-		self.setIfValueExists('INCLUDEPATH', ['/somepath/include'])
-		self.setIfValueExists('LIBPATH', ['/somepath/libs'])
-		self.setIfValueExists('LIBS', ['lib1.lib', 'lib2.lib'])
-		
-		self.tryFindingLibs()
-		
-		return self.getLibraryOptions()
-
-Export('MacOSHomebrewLibraryFinder')        
+import osimport sysimport fnmatchimport ConfigParserSConscript('#/config/libraryFinder/AbstractLibraryFinder.py')Import('*')LibrariesPathPrefix = "/usr/local/opt"class MacOSHomebrewLibraryFinder(AbstractLibraryFinder):    def __init__(self, libName, checkLibParameters, includePath=[], libPath=[]):        AbstractLibraryFinder.__init__(self, libName, checkLibParameters)    def checkForLibraries(self):        self.libName = self.libName.lower()        print 'Platform:' + platform        print 'Configuration:' + configuration        print 'Search here for the settings of library:' + self.libName        if(self.libName == 'glut'):            self.libName = 'freeglut'        libraryPath = os.path.join(LibrariesPathPrefix, self.libName)        if(os.path.isdir(libraryPath)):            libraryIncludePath = os.path.join(libraryPath, "include")            if(os.path.isdir(libraryIncludePath)):                self.includePath = libraryIncludePath            libraryLibPath = os.path.join(libraryPath, "lib")            if(os.path.isdir(libraryLibPath)):                self.libPath = libraryLibPath            if(self.libName == "boost"):                libNames = [files for files in os.listdir(                    libraryLibPath) if fnmatch.fnmatch(files, '*-mt.dylib')]            elif (self.libName == "opencv"):                libNames = [files for files in os.listdir(                    libraryLibPath) if fnmatch.fnmatch(files, '*[a-z].dylib')]            else:                libNames = [files for files in os.listdir(                    libraryLibPath) if fnmatch.fnmatch(files, '*.dylib')]            self.setIfValueExists('INCLUDEPATH', self.includePath)            self.setIfValueExists('LIBPATH', self.libPath)            self.setIfValueExists('LIBS', libNames)            if(self.libName == 'freeglut'):                self.libName = 'GLUT'            self.libName = self.libName.upper()                else:            print "==> Couldn't find %s library!!!" %self.libName            print "==> You can install it with: 'brew install %s'" %self.libName        self.tryFindingLibs()        return self.getLibraryOptions()Export('MacOSHomebrewLibraryFinder')
