@@ -127,6 +127,7 @@ if(UbiTrack_LIB_PATH AND EXISTS "${UbiTrack_LIB_PATH}/UbiTrackConfig.cmake")
   include("${UbiTrack_LIB_PATH}/UbiTrackConfig.cmake")
 
   if(UbiTrack_CUDA)
+    MESSAGE(STATUS "UbiTrack_CUDA ${UbiTrack_LIBS}")
     set(_UbiTrack_LIBS "")
     foreach(_lib ${UbiTrack_LIBS})
       string(REPLACE "${UbiTrack_CONFIG_PATH}/gpu/${UbiTrack_ARCH}/${UbiTrack_RUNTIME}" "${UbiTrack_CONFIG_PATH}/${UbiTrack_ARCH}/${UbiTrack_RUNTIME}" _lib2 "${_lib}")

@@ -695,8 +695,7 @@ macro(ut_add_module_tests)
       set_target_properties(${the_target} PROPERTIES COMPILE_DEFINITIONS "${UBITRACK_MODULE_TEST_${the_target}_COMPILE_DEFINITIONS}")
 
       enable_testing()
-      get_target_property(LOC ${the_target} LOCATION)
-      add_test(${the_target} "${LOC}")
+      add_test(${the_target} ${the_target})
 
       #ut_add_precompiled_headers(${the_target})
     else(UT_DEPENDENCIES_FOUND)
