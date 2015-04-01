@@ -13,12 +13,22 @@ SConsignFile()
 # LOAD CONFIGURATIONS FROM CACHE / COMMAND LINE
 #
 
+# add platform option
+
+default_arch = 'x64'
+if sys.platform.startswith( 'linux' ):
+	arch = os.uname()[ 4 ]
+	#if arch == 'i686' or arch == 'i586' or arch == 'i486' or arch == 'i386':
+	if arch != 'x86_64':
+		default_arch = 'x86'
+
+
 # create an options environment
 opts = config.NoEnvOptions( 'config.cache', ARGUMENTS )
 Export( 'opts' )
 
 # add platform option
-opts.Add( 'PLATFORM', 'Platform configuration (x86, x64 or android)', 'x64' )
+opts.Add( 'PLATFORM', 'Platform configuration (x86, x64 or android)', default_arch )
 if opts[ 'PLATFORM' ] not in [ 'x86', 'x64', 'android' ]:
 	print "Invalid value specified for option PLATFORM"
 	Exit( 1 )
