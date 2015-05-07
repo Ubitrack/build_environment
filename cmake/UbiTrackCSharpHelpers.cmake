@@ -327,6 +327,8 @@ function(install_assembly)
     get_property(type TARGET ${target} PROPERTY _assembly_type)
     get_property(pc_file TARGET ${target} PROPERTY pkg-config_template_basename)
 
+    STRING(REGEX REPLACE "\\\\" "/" filename ${filename}) 
+
     if (NOT pc_file)
         set (pc_file ${target})
     endif (NOT pc_file)
