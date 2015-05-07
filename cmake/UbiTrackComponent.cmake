@@ -178,6 +178,12 @@ endmacro()
 #   ut_create_multi_component(<extra link dependencies>)
 macro(ut_create_multi_component)
 	foreach(fpath ${UBITRACK_COMPONENT_${the_component}_SOURCES})
+
+		foreach(m ${UBITRACK_MODULES_BUILD})
+		  string(TOUPPER ${m} m_)
+		  add_definitions("-DHAVE_${m_}")
+		endforeach()
+
 		GET_FILENAME_COMPONENT(fname ${fpath} NAME_WE)
 
 		add_library(${fname} SHARED ${UBITRACK_COMPONENT_${the_component}_HEADERS} ${fpath})
@@ -262,6 +268,12 @@ endmacro()
 # Usage:
 #   ut_create_single_component(<extra link dependencies>)
 macro(ut_create_single_component)
+
+	foreach(m ${UBITRACK_MODULES_BUILD})
+	  string(TOUPPER ${m} m_)
+	  add_definitions("-DHAVE_${m_}")
+	endforeach()
+
 	add_library(${the_component} SHARED ${UBITRACK_COMPONENT_${the_component}_HEADERS} ${UBITRACK_COMPONENT_${the_component}_SOURCES})
 
 	set(UBITRACK_COMPONENT_${the_component}_COMPILE_DEFINITIONS)
