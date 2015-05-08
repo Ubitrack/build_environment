@@ -205,6 +205,8 @@ macro(ut_create_executable)
 
 	  set_target_properties(${the_app} PROPERTIES COMPILE_FLAGS "${UBITRACK_COMPILE_FLAGS}")
 	  set_target_properties(${the_app} PROPERTIES LINK_FLAGS "${UBITRACK_LINK_FLAGS}")
+    set_target_properties(${the_app} PROPERTIES LINK_FLAGS_DEBUG "${UBITRACK_LINK_FLAGS_DEBUG}")
+
 	  foreach(_symb ${UBITRACK_DEFINES})
 		  set_target_properties(${the_app} PROPERTIES DEFINE_SYMBOL ${_symb})
 	  endforeach()
