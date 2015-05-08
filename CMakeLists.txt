@@ -52,7 +52,7 @@ else()
 endif()
 
 # must go before the project command
-set(CMAKE_CONFIGURATION_TYPES "Debug;Release" CACHE STRING "Configs" FORCE)
+set(CMAKE_CONFIGURATION_TYPES "Debug;Release;RelWithDebInfo" CACHE STRING "Configs" FORCE)
 if(DEFINED CMAKE_BUILD_TYPE AND CMAKE_VERSION VERSION_GREATER "2.8")
   set_property( CACHE CMAKE_BUILD_TYPE PROPERTY STRINGS ${CMAKE_CONFIGURATION_TYPES} )
 endif()
@@ -112,6 +112,7 @@ if(WIN32)
 	  set(UBITRACK_COMPILE_FLAGS "/EHsc /c /W3 /GR /wd4355 /wd4996 /wd4251 /wd4275 /wd4819 /wd4290")
 	  set(UBITRACK_LINK_FLAGS "/SUBSYSTEM:CONSOLE")
 	  set(UBITRACK_DEFINES "WIN32" "_MBCS" "_WIN32_WINNT=0x501")	
+    set(UBITRACK_LINK_FLAGS_DEBUG "/NODEFAULTLIB:libc.lib /NODEFAULTLIB:libcmt.lib /NODEFAULTLIB:msvcrt.lib /NODEFAULTLIB:libcd.lib /NODEFAULTLIB:libcmtd.lib")
 endif(WIN32)
 
 # Option to use Macports ??
@@ -157,6 +158,7 @@ UT_OPTION(BUILD_TESTS          "Build regression tests"                         
 UT_OPTION(ENABLE_PRECOMPILED_HEADERS "Use precompiled headers"                                  ON )
 UT_OPTION(ENABLE_SOLUTION_FOLDERS    "Solution folder in Visual Studio or in other IDEs"        ${ENABLE_SOLUTION_FOLDERS0} IF (CMAKE_VERSION VERSION_GREATER "2.8.0") )
 UT_OPTION(COMPILE_WITH_CXX11   "Compile UbiTrack using C++11 (GCC)"    OFF)
+UT_OPTION(ENABLE_BOOST_STATIC_LINKING   "Enable static linking for boost libraries."    OFF)
 
 set(UT_MAXIMUM_EVENTQUEUE_LENGTH "7" CACHE FILEPATH "Maximum EventQueue length")
 add_definitions("-DMAXIMUM_EVENTQUEUE_LENGTH=${UT_MAXIMUM_EVENTQUEUE_LENGTH}")

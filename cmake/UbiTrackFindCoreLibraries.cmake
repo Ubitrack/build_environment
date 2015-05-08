@@ -51,16 +51,25 @@ IF(WIN32 AND DEFINED EXTERNAL_LIBRARIES_DIR)
 ENDIF(WIN32 AND DEFINED EXTERNAL_LIBRARIES_DIR)
 
 SET(HAVE_BOOST 0)
-set(Boost_USE_STATIC_LIBS   OFF)
+
+
+if(ENABLE_BOOST_STATIC_LINKING)
+	set(Boost_USE_STATIC_LIBS ON)
+else()
+	set(Boost_USE_STATIC_LIBS OFF)
+endif()
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
 find_package( Boost 1.49 COMPONENTS thread date_time system filesystem regex chrono locale serialization program_options REQUIRED)
 if(Boost_FOUND)
+  add_definitions("-DBOOST_ALL_NO_LIB")
   add_definitions("-DBOOST_FILESYSTEM_VERSION=3")
   add_definitions(-DHAVE_BOOST)
   SET(HAVE_BOOST 1)
 
   link_directories(${Boost_LIBRARY_DIRS})
+  message (STATUS "  Boost_LIBRARIES: ${Boost_LIBRARIES}")
+
 endif(Boost_FOUND)
 
 # get python

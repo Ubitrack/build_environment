@@ -178,6 +178,12 @@ endmacro()
 #   ut_create_multi_component(<extra link dependencies>)
 macro(ut_create_multi_component)
 	foreach(fpath ${UBITRACK_COMPONENT_${the_component}_SOURCES})
+
+		foreach(m ${UBITRACK_MODULES_BUILD})
+		  string(TOUPPER ${m} m_)
+		  add_definitions("-DHAVE_${m_}")
+		endforeach()
+
 		GET_FILENAME_COMPONENT(fname ${fpath} NAME_WE)
 
 		add_library(${fname} SHARED ${UBITRACK_COMPONENT_${the_component}_HEADERS} ${fpath})
@@ -197,9 +203,6 @@ macro(ut_create_multi_component)
 		set_target_properties(${fname} PROPERTIES
 		  OUTPUT_NAME "${fname}"
 		  DEBUG_POSTFIX "${UBITRACK_DEBUG_POSTFIX}"
-		  ARCHIVE_OUTPUT_DIRECTORY ${UBITRACK_COMPONENT_INSTALL_PATH}
-		  LIBRARY_OUTPUT_DIRECTORY ${UBITRACK_COMPONENT_INSTALL_PATH}
-		  RUNTIME_OUTPUT_DIRECTORY ${EXECUTABLE_OUTPUT_PATH}
 		  INSTALL_NAME_DIR lib
 		)
 
@@ -217,6 +220,7 @@ macro(ut_create_multi_component)
 		  if(MSVC)
 			  set_target_properties(${fname} PROPERTIES COMPILE_FLAGS "${UBITRACK_COMPILE_FLAGS}")
 			  set_target_properties(${fname} PROPERTIES LINK_FLAGS "${UBITRACK_LINK_FLAGS}")
+		      set_target_properties(${fname} PROPERTIES LINK_FLAGS_DEBUG "${UBITRACK_LINK_FLAGS_DEBUG}")
 			  foreach(_symb ${UBITRACK_DEFINES})
 				  set_target_properties(${fname} PROPERTIES DEFINE_SYMBOL ${_symb})
 			  endforeach()
@@ -240,9 +244,15 @@ macro(ut_create_multi_component)
 	    set_target_properties(${fname} PROPERTIES COMPILE_DEFINITIONS "${UBITRACK_COMPONENT_${fname}_COMPILE_DEFINITIONS}")
 
 		install(TARGETS ${fname}
-		  RUNTIME DESTINATION ${UBITRACK_COMPONENT_BIN_INSTALL_PATH} COMPONENT main
-		  LIBRARY DESTINATION ${UBITRACK_COMPONENT_INSTALL_PATH} COMPONENT main
-		  ARCHIVE DESTINATION ${UBITRACK_COMPONENT_INSTALL_PATH} COMPONENT main
+		  RUNTIME DESTINATION ${UBITRACK_COMPONENT_BIN_INSTALL_PATH}_d COMPONENT main CONFIGURATIONS Debug
+		  LIBRARY DESTINATION ${UBITRACK_COMPONENT_INSTALL_PATH}_d COMPONENT main CONFIGURATIONS Debug
+		  ARCHIVE DESTINATION ${UBITRACK_COMPONENT_INSTALL_PATH}_d COMPONENT main CONFIGURATIONS Debug
+		  )
+
+		install(TARGETS ${fname}
+		  RUNTIME DESTINATION ${UBITRACK_COMPONENT_BIN_INSTALL_PATH} COMPONENT main CONFIGURATIONS Release
+		  LIBRARY DESTINATION ${UBITRACK_COMPONENT_INSTALL_PATH} COMPONENT main CONFIGURATIONS Release
+		  ARCHIVE DESTINATION ${UBITRACK_COMPONENT_INSTALL_PATH} COMPONENT main CONFIGURATIONS Release
 		  )
 
 	 endforeach()
@@ -262,6 +272,12 @@ endmacro()
 # Usage:
 #   ut_create_single_component(<extra link dependencies>)
 macro(ut_create_single_component)
+
+	foreach(m ${UBITRACK_MODULES_BUILD})
+	  string(TOUPPER ${m} m_)
+	  add_definitions("-DHAVE_${m_}")
+	endforeach()
+
 	add_library(${the_component} SHARED ${UBITRACK_COMPONENT_${the_component}_HEADERS} ${UBITRACK_COMPONENT_${the_component}_SOURCES})
 
 	set(UBITRACK_COMPONENT_${the_component}_COMPILE_DEFINITIONS)
@@ -274,9 +290,6 @@ macro(ut_create_single_component)
 	set_target_properties(${the_component} PROPERTIES
 	  OUTPUT_NAME "${the_component}"
 	  DEBUG_POSTFIX "${UBITRACK_DEBUG_POSTFIX}"
-	  ARCHIVE_OUTPUT_DIRECTORY ${UBITRACK_COMPONENT_INSTALL_PATH}
-	  LIBRARY_OUTPUT_DIRECTORY ${UBITRACK_COMPONENT_INSTALL_PATH}
-	  RUNTIME_OUTPUT_DIRECTORY ${EXECUTABLE_OUTPUT_PATH}
 	  INSTALL_NAME_DIR lib
 	)
 
@@ -294,6 +307,7 @@ macro(ut_create_single_component)
 	  if(MSVC)
 		  set_target_properties(${the_component} PROPERTIES COMPILE_FLAGS "${UBITRACK_COMPILE_FLAGS}")
 		  set_target_properties(${the_component} PROPERTIES LINK_FLAGS "${UBITRACK_LINK_FLAGS}")
+    	  set_target_properties(${the_component} PROPERTIES LINK_FLAGS_DEBUG "${UBITRACK_LINK_FLAGS_DEBUG}")
 		  foreach(_symb ${UBITRACK_DEFINES})
 			  set_target_properties(${the_component} PROPERTIES DEFINE_SYMBOL ${_symb})
 		  endforeach()
@@ -317,9 +331,15 @@ macro(ut_create_single_component)
 	endif()
 
 	install(TARGETS ${the_component}
-	  RUNTIME DESTINATION ${UBITRACK_COMPONENT_BIN_INSTALL_PATH} COMPONENT main
-	  LIBRARY DESTINATION ${UBITRACK_COMPONENT_INSTALL_PATH} COMPONENT main
-	  ARCHIVE DESTINATION ${UBITRACK_COMPONENT_INSTALL_PATH} COMPONENT main
+	  RUNTIME DESTINATION ${UBITRACK_COMPONENT_BIN_INSTALL_PATH}_d COMPONENT main CONFIGURATIONS Debug
+	  LIBRARY DESTINATION ${UBITRACK_COMPONENT_INSTALL_PATH}_d COMPONENT main CONFIGURATIONS Debug
+	  ARCHIVE DESTINATION ${UBITRACK_COMPONENT_INSTALL_PATH}_d COMPONENT main CONFIGURATIONS Debug
+	  )
+
+	install(TARGETS ${the_component}
+	  RUNTIME DESTINATION ${UBITRACK_COMPONENT_BIN_INSTALL_PATH} COMPONENT main CONFIGURATIONS Release
+	  LIBRARY DESTINATION ${UBITRACK_COMPONENT_INSTALL_PATH} COMPONENT main CONFIGURATIONS Release
+	  ARCHIVE DESTINATION ${UBITRACK_COMPONENT_INSTALL_PATH} COMPONENT main CONFIGURATIONS Release
 	  )
 
 	IF(GENERATE_METADATA)
