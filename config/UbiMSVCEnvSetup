@@ -67,6 +67,9 @@ else:
 if masterEnv.get( 'MSVS_VERSION', '6.0' )  >= '8.0':
 	masterEnv[ 'LINKCOM' ] = [ masterEnv[ 'LINKCOM' ], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1' ]
 	masterEnv[ 'SHLINKCOM' ] = [ masterEnv[ 'SHLINKCOM' ], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;2' ]
+if masterEnv.get( 'MSVS_VERSION', '6.0' )  >= '12.0':	
+	masterEnv.Append( CPPDEFINES = [ 'COMPILER_USE_CXX11' ] )
+	
 
 # create a global list of visual studio projects in the top level directory to be merged with the solution file
 # it would be nicer if there was a scons command to get a list of all .vcproj nodes created in this directory
