@@ -37,10 +37,10 @@ set(HAVE_LOG4CPP 1)
 # always use supplied boost bindings
 set(BOOSTBINDINGS_INCLUDE_DIR "${CMAKE_SOURCE_DIR}/modules/utcore/3rd/boost-bindings")
 add_subdirectory("${CMAKE_SOURCE_DIR}/modules/utcore/3rd/boost-bindings")
-IF(CMAKE_COMPILER_IS_GNUCXX AND NOT (APPLE AND (APPLE_CLANG_VERSION VERSION_GREATER 3.3)))
+IF(NOT WIN32)
   MESSAGE(STATUS "set boost::ublas alignment to 16")
   add_definitions("-DBOOST_UBLAS_BOUNDED_ARRAY_ALIGN=__attribute__ ((aligned (16)))")
-ENDIF(CMAKE_COMPILER_IS_GNUCXX AND NOT (APPLE AND (APPLE_CLANG_VERSION VERSION_GREATER 3.3)))
+ENDIF(NOT WIN32)
 add_definitions(-DBOOST_SPIRIT_USE_OLD_NAMESPACE)
 set(HAVE_BOOSTBINDINGS 1)
 
