@@ -17,6 +17,9 @@ if(COMMAND cmake_policy)
   if(POLICY CMP0053)
   	cmake_policy(SET CMP0053 OLD)
   endif()
+  if(POLICY CMP0054)
+    cmake_policy(SET CMP0054 OLD)
+  endif()
 endif()
 
 # Following block can broke build in case of cross-compilng
