@@ -6,3 +6,4 @@ git submodule add git@intern.far.in.tum.de:Ubitrack/utDataflow.git modules/utdat
 git submodule add git@intern.far.in.tum.de:Ubitrack/utFacade.git modules/utfacade
 git submodule add git@intern.far.in.tum.de:Ubitrack/utVisualization.git modules/utvisualization
 git submodule add git@intern.far.in.tum.de:UbitrackContrib/DirectShowDriver.git modules/mswindows
+git submodule add git@intern.far.in.tum.de:UbitrackContrib/ARTDriver.git modules/artdriver
