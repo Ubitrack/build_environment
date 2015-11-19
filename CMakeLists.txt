@@ -17,6 +17,9 @@ if(COMMAND cmake_policy)
   if(POLICY CMP0053)
   	cmake_policy(SET CMP0053 OLD)
   endif()
+  if(POLICY CMP0054)
+    cmake_policy(SET CMP0054 OLD)
+  endif()
 endif()
 
 # Following block can broke build in case of cross-compilng
@@ -162,6 +165,9 @@ UT_OPTION(ENABLE_BOOST_STATIC_LINKING   "Enable static linking for boost librari
 
 set(UT_MAXIMUM_EVENTQUEUE_LENGTH "7" CACHE FILEPATH "Maximum EventQueue length")
 add_definitions("-DMAXIMUM_EVENTQUEUE_LENGTH=${UT_MAXIMUM_EVENTQUEUE_LENGTH}")
+
+set(UT_MAXIMUM_EVENTQUEUES "4" CACHE FILEPATH "Maximum number of EventQueues")
+add_definitions("-DUT_MAXIMUM_EVENTQUEUES=${UT_MAXIMUM_EVENTQUEUES}")
 
 
 # Activate C++11 mode if available

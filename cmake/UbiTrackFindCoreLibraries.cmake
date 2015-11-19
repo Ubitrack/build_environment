@@ -14,7 +14,10 @@ ELSE()
 	ENDIF(ENV_UBITRACKLIB_EXTERNAL32)
 ENDIF(X86_64)
 
-
+if(WIN32)
+  MESSAGE(STATUS "Setting minimum Windows version to Vista WINVER=0x0600")
+  add_definitions(-DWINVER=0x0600)
+endif(WIN32)
 
 
 # always used supplied tinyxml
