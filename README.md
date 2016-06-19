@@ -406,3 +406,15 @@ You can see all command line parameters by calling:
 Create a Visual Studio Project:
 
     scons vcproj
+
+
+
+
+
+# Notes for compiling on Mac (New for Version 1.3)
+
+1. install homebrew
+2. add repository for build-scripts: brew tap ulricheck/homebrew-science
+3. install boost, tbb: brew install boost; brew install tbb
+3. install opencv dependency: brew install --build-from-source opencv3ut --with-cuda --with-opengl --with-tbb
+4. install ubitrack: brew install --build-from-source ubitrack --c++11
