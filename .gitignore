@@ -13,3 +13,4 @@
 /.sconf_temp
 /config/*.pyc
 /misc/installer/Windows/UbiTrack_Installer.exe
+.gitmodules
