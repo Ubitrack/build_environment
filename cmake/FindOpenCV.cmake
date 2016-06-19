@@ -202,12 +202,15 @@ IF (OPENCV_ROOT_DIR)
     ${OPENCV_VERSION_MAJOR}${OPENCV_VERSION_MINOR}${OPENCV_VERSION_PATCH})
 
   IF (NOT OpenCV_FIND_COMPONENTS)
-    IF (OPENCV_VERSION VERSION_GREATER 2.1)
+    IF (OPENCV_VERSION VERION_GREATER 3.0)
+      SET (OpenCV_FIND_COMPONENTS calib3d core features2d flann highgui
+        imgcodecs imgproc ml objdetect shape superres video videoio)
+    ELSEIF (OPENCV_VERSION VERSION_GREATER 2.1)
       SET (OpenCV_FIND_COMPONENTS calib3d contrib core features2d flann highgui
         imgproc legacy ml objdetect video gpu)
-    ELSE (OPENCV_VERSION VERSION_GREATER 2.1)
+    ELSE (OPENCV_VERSION VERSION_GREATER 3.0)
       SET (OpenCV_FIND_COMPONENTS cxcore cv ml highgui cvaux)
-    ENDIF (OPENCV_VERSION VERSION_GREATER 2.1)
+    ENDIF (OPENCV_VERSION VERSION_GREATER 3.0)
   ENDIF (NOT OpenCV_FIND_COMPONENTS)
 
   # Loop over each components
