@@ -173,7 +173,7 @@ find_package(OpenCL)
 IF(OpenCL_FOUND)
   add_definitions(-DHAVE_OPENCL)
   SET(HAVE_OPENCL 1)
-  MESSAGE(STATUS "Found OpenCL: ${OpenCL_INCLUDE_DIR} - ${OpenCL_LIBRARIES}")
+  MESSAGE(STATUS "Found OpenCL: ${OpenCL_INCLUDE_DIR} - ${OpenCL_LIBRARY}")
 ENDIF(OpenCL_FOUND)
 
 #FreeGlut
