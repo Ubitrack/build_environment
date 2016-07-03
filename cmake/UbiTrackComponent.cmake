@@ -204,6 +204,9 @@ macro(ut_create_multi_component)
 		  OUTPUT_NAME "${fname}"
 		  DEBUG_POSTFIX "${UBITRACK_DEBUG_POSTFIX}"
 		  INSTALL_NAME_DIR lib
+		  ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/ubitrack"
+		  LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/ubitrack"
+		  RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
 		)
 
 		# For dynamic link numbering convenions
@@ -291,6 +294,9 @@ macro(ut_create_single_component)
 	  OUTPUT_NAME "${the_component}"
 	  DEBUG_POSTFIX "${UBITRACK_DEBUG_POSTFIX}"
 	  INSTALL_NAME_DIR lib
+      ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/ubitrack"
+      LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/lib/ubitrack"
+      RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
 	)
 
 	# For dynamic link numbering convenions
