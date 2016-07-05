@@ -162,6 +162,7 @@ UT_OPTION(ENABLE_PRECOMPILED_HEADERS "Use precompiled headers"                  
 UT_OPTION(ENABLE_SOLUTION_FOLDERS    "Solution folder in Visual Studio or in other IDEs"        ${ENABLE_SOLUTION_FOLDERS0} IF (CMAKE_VERSION VERSION_GREATER "2.8.0") )
 UT_OPTION(COMPILE_WITH_CXX11   "Compile UbiTrack using C++11 (GCC)"    OFF)
 UT_OPTION(ENABLE_BOOST_STATIC_LINKING   "Enable static linking for boost libraries."    OFF)
+UT_OPTION(ENABLE_EXPAND_MULTICOMPONENTS "Expand Components into single libraries (does not yet work properly!!!)" ON)
 
 set(UT_MAXIMUM_EVENTQUEUE_LENGTH "7" CACHE FILEPATH "Maximum EventQueue length")
 add_definitions("-DMAXIMUM_EVENTQUEUE_LENGTH=${UT_MAXIMUM_EVENTQUEUE_LENGTH}")
