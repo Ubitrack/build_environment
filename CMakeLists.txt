@@ -160,7 +160,7 @@ UT_OPTION(BUILD_TESTS          "Build regression tests"                         
 
 UT_OPTION(ENABLE_PRECOMPILED_HEADERS "Use precompiled headers"                                  ON )
 UT_OPTION(ENABLE_SOLUTION_FOLDERS    "Solution folder in Visual Studio or in other IDEs"        ${ENABLE_SOLUTION_FOLDERS0} IF (CMAKE_VERSION VERSION_GREATER "2.8.0") )
-UT_OPTION(COMPILE_WITH_CXX11   "Compile UbiTrack using C++11 (GCC)"    OFF)
+UT_OPTION(COMPILE_WITH_CXX11   "Compile UbiTrack using C++11 (GCC)"    ON)
 UT_OPTION(ENABLE_BOOST_STATIC_LINKING   "Enable static linking for boost libraries."    OFF)
 UT_OPTION(ENABLE_EXPAND_MULTICOMPONENTS "Expand Components into single libraries (does not yet work properly!!!)" ON)
 
