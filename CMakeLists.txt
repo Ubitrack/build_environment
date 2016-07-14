@@ -164,6 +164,16 @@ UT_OPTION(COMPILE_WITH_CXX11   "Compile UbiTrack using C++11 (GCC)"    ON)
 UT_OPTION(ENABLE_BOOST_STATIC_LINKING   "Enable static linking for boost libraries."    OFF)
 UT_OPTION(ENABLE_EXPAND_MULTICOMPONENTS "Expand Components into single libraries (does not yet work properly!!!)" ON)
 
+IF(APPLE)
+  UT_OPTION(ENABLE_TRACING_DTRACE "Enable DTrace tracing of eventqueue activity?" OFF)
+ENDIF(APPLE)
+IF(WIN32)
+  UT_OPTION(ENABLE_TRACING_ETW "Enable ETW Tracing of eventqueue activity?" OFF)
+ENDIF(WIN32)
+IF(CMAKE_SYSTEM_NAME MATCHES "Linux")
+  UT_OPTION(ENABLE_TRACING_LTTNGUST "Enable LTTNG-UST Tracing of eventqueue activity?" OFF)
+ENDIF(CMAKE_SYSTEM_NAME MATCHES "Linux")
+
 set(UT_MAXIMUM_EVENTQUEUE_LENGTH "7" CACHE FILEPATH "Maximum EventQueue length")
 add_definitions("-DMAXIMUM_EVENTQUEUE_LENGTH=${UT_MAXIMUM_EVENTQUEUE_LENGTH}")
 
