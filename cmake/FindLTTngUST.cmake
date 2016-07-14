@@ -103,9 +103,9 @@ endif()
 
 # handle the QUIETLY and REQUIRED arguments and set LTTNGUST_FOUND to
 # TRUE if all listed variables are TRUE
-# include(${CMAKE_CURRENT_LIST_DIR}/FindPackageHandleStandardArgs.cmake)
+include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(LTTngUST FOUND_VAR LTTNGUST_FOUND
-                                  REQUIRED_VARS LTTNGUST_LIBRARIES
-                                                LTTNGUST_INCLUDE_DIRS
-                                  VERSION_VAR LTTNGUST_VERSION_STRING)
+  REQUIRED_VARS LTTNGUST_LIBRARIES
+  LTTNGUST_INCLUDE_DIRS
+  VERSION_VAR LTTNGUST_VERSION_STRING)
 mark_as_advanced(LTTNGUST_LIBRARIES LTTNGUST_INCLUDE_DIRS)
