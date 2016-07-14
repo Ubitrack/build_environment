@@ -222,6 +222,7 @@ IF(UNIX)
 ENDIF(UNIX)
 
 # Tracing Providers for various platforms
+set(TRACING_EXTRA_LIBRARIES "")
 IF(ENABLE_TRACING_DTRACE)
     MESSAGE( STATUS "Enabled DTrace.")
     INCLUDE(dtrace)
@@ -238,11 +239,15 @@ IF(ENABLE_TRACING_ETW)
     include_directories(${CMAKE_BINARY_DIR})
 ENDIF(ENABLE_TRACING_ETW)
 
+
+# example provided here:
+# https://github.com/lttng/lttng-ust/tree/master/doc/examples/cmake-multiple-shared-libraries
 IF(ENABLE_TRACING_LTTNGUST)
     MESSAGE( STATUS "Enabled LTTNG-UST.")
     find_package(LTTngUST REQUIRED)
     MESSAGE(STATUS "Found LTTNG-UST tools and headers")
     add_definitions("-DHAVE_LTTNGUST")
     add_definitions("-DENABLE_EVENT_TRACING")
+    set(TRACING_EXTRA_LIBRARIES ${LTTNGUST_LIBRARIES})
 ENDIF(ENABLE_TRACING_LTTNGUST)
 
