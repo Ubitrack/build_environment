@@ -14,3 +14,4 @@
 /config/*.pyc
 /misc/installer/Windows/UbiTrack_Installer.exe
 .gitmodules
+build*/
