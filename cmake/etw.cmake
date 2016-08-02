@@ -48,7 +48,7 @@ IF(ENABLE_ETW)
    OUTPUT "${CMAKE_BINARY_DIR}/utUtil/probes_ubitrack_etw.h" 
            "${CMAKE_BINARY_DIR}/utUtil/probes_ubitrack_etw.rc" 
            "${CMAKE_BINARY_DIR}/utUtil/probes_ubitrack_etwTemp.bin"
-   COMMAND ${CMAKE_MC_COMPILER} -u ${CMAKE_BINARY_DIR}/utUtil/ubitrack_etw_providers.man -z probes_ubitrack_etw
+   COMMAND ${CMAKE_MC_COMPILER} -um ${CMAKE_BINARY_DIR}/utUtil/ubitrack_etw_providers.man -z probes_ubitrack_etw
    WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/utUtil"
    COMMENT "Exectuing: mc.exe -um ${CMAKE_BINARY_DIR}/utUtil/ubitrack_etw_providers.man -z probes_ubitrack_etw"
    DEPENDS ${CMAKE_BINARY_DIR}/utUtil/ubitrack_etw_providers.man
