@@ -1,9 +1,8 @@
-git submodule add git@intern.far.in.tum.de:Ubitrack/utCore.git modules/utcore
-git submodule add git@intern.far.in.tum.de:Ubitrack/utVision.git modules/utvision
-git submodule add git@intern.far.in.tum.de:Ubitrack/utComponents.git modules/utcomponents
-git submodule add git@intern.far.in.tum.de:Ubitrack/utVisionComponents.git modules/utvisioncomponents
-git submodule add git@intern.far.in.tum.de:Ubitrack/utDataflow.git modules/utdataflow
-git submodule add git@intern.far.in.tum.de:Ubitrack/utFacade.git modules/utfacade
-git submodule add git@intern.far.in.tum.de:Ubitrack/utVisualization.git modules/utvisualization
-git submodule add git@intern.far.in.tum.de:UbitrackContrib/DirectShowDriver.git modules/mswindows
-git submodule add git@intern.far.in.tum.de:UbitrackContrib/ARTDriver.git modules/artdriver
+git clone https://github.com/Ubitrack/utcore.git modules/utcore
+git clone https://github.com/Ubitrack/utvision.git modules/utvision
+git clone https://github.com/Ubitrack/utdataflow.git modules/utdataflow
+git clone https://github.com/Ubitrack/utfacade.git modules/utfacade
+git clone https://github.com/Ubitrack/component_core.git modules/component_core
+git clone https://github.com/Ubitrack/component_vision.git modules/component_vision
+git clone https://github.com/Ubitrack/component_visualization.git modules/component_visualization
+git clone https://github.com/Ubitrack/device_camera_directshow.git modules/device_camera_directshow
