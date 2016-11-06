@@ -46,21 +46,25 @@ ELSE (WIN32)
     FIND_PATH( Freeglut_INCLUDE_DIR GL/freeglut.h
       /opt/local/include
       /usr/local/include
+      /opt/X11/include
       )
   
     FIND_LIBRARY( Freeglut_glut_LIBRARY glut
       /opt/local/lib
       /usr/local/lib
+      /opt/X11/lib
       )
     
     FIND_LIBRARY( Freeglut_Xi_LIBRARY Xi
       /opt/local/lib
       /usr/local/lib
+      /opt/X11/lib
       )
     
     FIND_LIBRARY( Freeglut_Xmu_LIBRARY Xmu
       /opt/local/lib
       /usr/local/lib
+      /opt/X11/lib
       )
 
 
