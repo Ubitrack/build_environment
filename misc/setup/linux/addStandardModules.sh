@@ -6,4 +6,4 @@ git clone https://github.com/Ubitrack/utfacade.git modules/utfacade
 git clone https://github.com/Ubitrack/component_core.git modules/component_core
 git clone https://github.com/Ubitrack/component_vision.git modules/component_vision
 git clone https://github.com/Ubitrack/component_visualization.git modules/component_visualization
-git clone https://github.com/Ubitrack/device_camera_directshow.git modules/device_camera_v4l
+git clone https://github.com/Ubitrack/device_camera_v4l.git modules/device_camera_v4l
