@@ -282,9 +282,6 @@ include(cmake/UbiTrackComponent.cmake)
 # Include App Functions
 include(cmake/UbiTrackApp.cmake)
 
-# --- Python Support ---
-include(cmake/UbiTrackDetectPython.cmake)
-
 # --- Java Support ---
 include(cmake/UbiTrackDetectApacheAnt.cmake)
 if(ANDROID)
@@ -319,7 +316,6 @@ set(UBITRACK_CORE_DEPS_INCLUDE_DIR
 		${BOOSTBINDINGS_INCLUDE_DIR} 
 		${LAPACK_INCLUDE_DIR} 
 		${Boost_INCLUDE_DIR} 
-		#${PYTHON_INCLUDE_DIRS}
 		)
 
 # Extra UbiTrack targets: uninstall, package_source, perf, etc.
