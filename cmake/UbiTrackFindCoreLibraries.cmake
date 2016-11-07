@@ -23,6 +23,16 @@ if(WIN32)
   add_definitions(-DWINVER=0x0600)
 endif(WIN32)
 
+# pthreads
+SET(PTHREAD_ROOT_DIR "${EXTERNAL_LIBRARIES_DIR}/pthread")
+IF(UNIX)
+  find_package(PTHREAD)
+  IF(PTHREAD_FOUND)
+    add_definitions(-DHAVE_PTHREAD)
+    SET(HAVE_PTHREAD 1)
+  ENDIF(PTHREAD_FOUND)
+ENDIF(UNIX)
+
 
 # always used supplied tinyxml
 set(TINYXML_LIBRARY tinyxml)
@@ -220,14 +230,6 @@ IF(SWIG_FOUND)
   INCLUDE(${SWIG_USE_FILE})
 ENDIF(SWIG_FOUND)
 
-# pthreads
-IF(UNIX)
-	find_package(PTHREAD)
-	IF(PTHREAD_FOUND)
-	  add_definitions(-DHAVE_PTHREAD)
-	  SET(HAVE_PTHREAD 1)
-	ENDIF(PTHREAD_FOUND)
-ENDIF(UNIX)
 
 # Tracing Providers for various platforms
 IF(ENABLE_TRACING_DTRACE)

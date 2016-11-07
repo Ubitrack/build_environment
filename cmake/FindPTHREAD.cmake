@@ -17,6 +17,7 @@ FIND_PATH(PTHREAD_INCLUDE_DIR NAMES pthread.h
                                     ../../External/include/pthread
                                     ${module_file_path}/../../../External/include
                                     ${module_file_path}/../../../External/include/pthread
+                                    ${PTHREAD_ROOT_DIR}/include
                               DOC "Path in which the file pthread.h is located." )
 
 MARK_AS_ADVANCED(PTHREAD_INCLUDE_DIR)
@@ -35,6 +36,7 @@ IF(WIN32)
                                      $ENV{H3D_ROOT}/../External/${LIB}
                                      ../../External/${LIB}
                                      ${module_file_path}/../../../External/${LIB}
+                                     ${PTHREAD_ROOT_DIR}/lib
                                DOC "Path to pthreadVC2 library." )
 ELSE(WIN32)
   FIND_LIBRARY( PTHREAD_LIBRARY NAMES pthread
