@@ -12,9 +12,10 @@ git clone https://github.com/Ubitrack/utcore.git utcore
 git clone https://github.com/Ubitrack/utvision.git utvision
 git clone https://github.com/Ubitrack/utdataflow.git utdataflow
 git clone https://github.com/Ubitrack/utfacade.git utfacade
+git clone https://github.com/Ubitrack/utvisualization.git modules/utvisualization
 git clone https://github.com/Ubitrack/component_core.git component_core
 git clone https://github.com/Ubitrack/component_vision.git component_vision
 git clone https://github.com/Ubitrack/component_visualization.git component_visualization
 git clone https://github.com/Ubitrack/device_camera_directshow.git device_camera_directshow
-git clone https://github.com/Ubitrack/device_camera_directshow.git device_camera_flycapture
-git clone https://github.com/Ubitrack/device_camera_directshow.git device_tracker_art
+git clone https://github.com/Ubitrack/device_camera_flycapture.git device_camera_flycapture
+git clone https://github.com/Ubitrack/device_tracker_art.git device_tracker_art
