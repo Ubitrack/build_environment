@@ -13,15 +13,24 @@ In order to build ubitrack the following tools have to be installed:
 
 - Git
 
-- C++ Compiler like gcc or MSVC
+- C++ Compiler like gcc, clang, or MSVC
 
-- Python (at least Version 2.7, e.g. [PythonXY](http://code.google.com/p/pythonxy/)  )
+- CMake 3.6
 
-- [Scons](http://www.scons.org/)
+###2. Dependencies
 
-- cmake (only required for Ubitrack for Android)
+- Boost C++ Libraries >= 1.59
 
-You can compile Ubitrack for Windows, Linux and Android on the appropriate system. However, the cross-compilation for Android is only possible on Linux. If there are any differences to the compilation for the Linux, they are explained in the appropriate Linux sections.
+- OpenCV >= 3.1
+
+- CLAPACK
+
+- PThread (linux/osx)
+
+
+
+You can compile Ubitrack for Windows, OSX, Linux, and Android(untested) on the appropriate system. However, the cross-compilation for Android is only possible on Linux. 
+If there are any differences to the compilation for the Linux, they are explained in the appropriate Linux sections.
 
 
 ###1.1 How to install build-tools
@@ -32,7 +41,14 @@ You can compile Ubitrack for Windows, Linux and Android on the appropriate syste
 
 Ubuntu is shipped with gcc and python pre-installed, to install Git and Scons, open up a terminal and type:
 
-    sudo apt-get install git scons
+    sudo apt-get install git cmake
+    
+**Ubitrack-Compilation for OSX**
+
+OSX is shipped with a clang and python pre-installed, to install Git and Scons, open up a terminal and type:
+
+    sudo apt-get install git cmake
+
 **Ubitrack-Compilation for Android on Linux**
 
 Android-NDK-Toolchain:
@@ -128,13 +144,9 @@ Mandatory
 
 - [Boost](http://www.boost.org/) (> 1.35)
 
-Optional 
-
 - Lapack
 
 - [OpenCV](http://opencv.org/)
-
-- Glut (or [Freeglut](http://freeglut.sourceforge.net/))
 
 These libraries have to be downloaded and configured. In order to do that there exist 3 ways, the first one described in 4.1 offers ready-to-use download packages and uses the Ubitrack library finder, which needs all the libraries in one specific folder. 4.2 configures the libraries with the command line and in 4.3 each possible configuration and path is set manually by editing a textfile. 
 
@@ -163,7 +175,7 @@ The Ubitrack library finder will take all library files in the "lib" and "lib_de
 You can download ready-to-use library packages for windows and extract them e.g. in the \<ubitrack\> folder:
 
 - [Minimal (Boost and Lapack)](http://campar.in.tum.de/personal/pankratz/UbiTrack/external_libraries_min.zip)
-- [All (Boost,Lapack, OpenCV, Freeglut)](http://campar.in.tum.de/personal/pankratz/UbiTrack/external_libraries_all.zip)
+- [All (Boost,Lapack, OpenCV, )](http://campar.in.tum.de/personal/pankratz/UbiTrack/external_libraries_all.zip)
 
 This results in a structure that should look like this:
     
@@ -173,7 +185,7 @@ This results in a structure that should look like this:
 
 **Ubitrack-Compilation for Linux on Linux:**
 
-If you haven't already done, yet, you can download and install BOOST, LAPACK and Freeglut with the terminal:
+If you haven't already done, yet, you can download and install BOOST, and LAPACK with the terminal:
 
     sudo apt-get update
     sudo apt-get install libboost-all-dev libblas-dev liblapack-dev libopencv-dev freeglut3-dev
