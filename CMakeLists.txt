@@ -259,6 +259,7 @@ set(UBITRACK_COMPONENT_BIN_INSTALL_PATH "bin/${UBITRACK_COMPONENT_INSTALL_DIRECT
 
 set(UBITRACK_MODULE_TYPE SHARED)
 
+set(UBITRACK_DOC_INSTALL_DIRECTORY "share/UbiTrack/doc")
 set(UBITRACK_UTQLPATTERN_INSTALL_DIRECTORY "share/UbiTrack/utql")
 set(UBITRACK_METADATA_INSTALL_DIRECTORY "share/UbiTrack/metadata")
 
@@ -379,3 +380,9 @@ endforeach()
 foreach(m ${UBITRACK_APPS_BUILD})
 	MESSAGE(STATUS "Configured App: ${m}")
 endforeach()
+
+# ----------------------------------------------------------------------------
+# CPack stuff
+# ----------------------------------------------------------------------------
+
+include(cmake/UbitrackPackaging.cmake)

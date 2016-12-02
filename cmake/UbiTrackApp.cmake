@@ -231,7 +231,7 @@ macro(ut_create_executable)
 	endif()
 
 	install(TARGETS ${the_app}
-	  RUNTIME DESTINATION bin COMPONENT main
+	  RUNTIME DESTINATION bin COMPONENT apps
 	  )
 
 endmacro()

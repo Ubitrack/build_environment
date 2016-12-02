@@ -525,9 +525,9 @@ macro(ut_create_module)
     set_target_properties(${the_module} PROPERTIES COMPILE_DEFINITIONS "${UBITRACK_MODULE_${the_module}_COMPILE_DEFINITIONS}")
 	
 	install(TARGETS ${the_module}
-	  RUNTIME DESTINATION bin COMPONENT main
-	  LIBRARY DESTINATION ${UBITRACK_LIB_INSTALL_PATH} COMPONENT main
-	  ARCHIVE DESTINATION ${UBITRACK_LIB_INSTALL_PATH} COMPONENT main
+	  RUNTIME DESTINATION bin COMPONENT libs
+	  LIBRARY DESTINATION ${UBITRACK_LIB_INSTALL_PATH} COMPONENT libs
+	  ARCHIVE DESTINATION ${UBITRACK_LIB_INSTALL_PATH} COMPONENT dev
 	  )
 
 	# only "public" headers need to be installed
@@ -538,9 +538,9 @@ macro(ut_create_module)
       GET_FILENAME_COMPONENT(fpath ${hdr3} PATH)
       #MESSAGE(STATUS "${UBITRACK_INCLUDE_INSTALL_PATH}/${fpath}")
       IF(fpath)
-	      install(FILES ${hdr} DESTINATION "${UBITRACK_INCLUDE_INSTALL_PATH}/${fpath}" COMPONENT main)
+	      install(FILES ${hdr} DESTINATION "${UBITRACK_INCLUDE_INSTALL_PATH}/${fpath}" COMPONENT dev)
       ELSE(fpath)
-        install(FILES ${hdr} DESTINATION "${UBITRACK_INCLUDE_INSTALL_PATH}" COMPONENT main)
+        install(FILES ${hdr} DESTINATION "${UBITRACK_INCLUDE_INSTALL_PATH}" COMPONENT dev)
       ENDIF(fpath)
 	  endforeach()
 	endif()
@@ -577,7 +577,7 @@ macro(ut_create_module_metadata)
     ut_convert_to_relative_paths(${CMAKE_CURRENT_SOURCE_DIR} METADATA_${the_module}_SOURCE_FILES)
     
     configure_file(${CMAKE_SOURCE_DIR}/cmake/metadata/module_cmake.dat ${CMAKE_CURRENT_BINARY_DIR}/metadata/${the_module}.dat)
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/metadata/${the_module}.dat DESTINATION ${UBITRACK_METADATA_INSTALL_DIRECTORY}/modules/ )
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/metadata/${the_module}.dat DESTINATION ${UBITRACK_METADATA_INSTALL_DIRECTORY}/modules/ COMPONENT dev)
 endmacro()
 
 
@@ -588,9 +588,9 @@ macro(ut_install_utql_patterns)
       string(REGEX REPLACE "^.*/doc/utql/" "" pfile2 "${pfile}")
       GET_FILENAME_COMPONENT(fpath ${pfile2} PATH)
       IF(fpath)
-    	install(FILES ${pfile} DESTINATION "${UBITRACK_UTQLPATTERN_INSTALL_DIRECTORY}/${fpath}" COMPONENT main)
+    	install(FILES ${pfile} DESTINATION "${UBITRACK_UTQLPATTERN_INSTALL_DIRECTORY}/${fpath}" COMPONENT data)
       ELSE(fpath)
-        install(FILES ${pfile} DESTINATION "${UBITRACK_UTQLPATTERN_INSTALL_DIRECTORY}" COMPONENT main)
+        install(FILES ${pfile} DESTINATION "${UBITRACK_UTQLPATTERN_INSTALL_DIRECTORY}" COMPONENT data)
       ENDIF(fpath)
     endforeach()
 endmacro()
