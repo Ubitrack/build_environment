@@ -155,7 +155,8 @@ These libraries have to be downloaded and configured. In order to do that there 
 
 Ubitrack is able to find libraries which have a specific folder structure that looks like this:
 
-
+    Cmake Variable: UT_EXTERNAL_LIBRARIES_DIR can be used to point to dependencies folder
+    
     <LibrariesDirectory>/[linux|windows|android]_[x64|x86]/LibraryName/[bin|include|lib|lib_debug]. 
 
 
