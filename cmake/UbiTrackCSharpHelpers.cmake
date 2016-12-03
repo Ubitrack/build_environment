@@ -51,6 +51,11 @@
 # Version: 1.0
 # Libs: -r:@assembly@
 
+  if(POLICY CMP0054)
+    cmake_policy(SET CMP0054 NEW)
+  endif()
+
+
 # ----- support macros -----
 macro(GET_LIBRARY_OUTPUT_DIR var)
     if (NOT LIBRARY_OUTPUT_PATH)
@@ -306,11 +311,7 @@ function(install_assembly)
         elseif (current STREQUAL "t")
             set (target ${arg})
 		elseif (current STREQUAL "x")
-            if (IS_ABSOLUTE "${arg}")
-                set (destination_dir "${arg}")
-            else (IS_ABSOLUTE "${arg}")
-                set (destination_dir "${CMAKE_INSTALL_PREFIX}/${arg}")
-            endif (IS_ABSOLUTE "${arg}")
+            set (destination_dir "${arg}")
         elseif (current STREQUAL "p")
             set (package ${arg})
         endif (arg STREQUAL "NO_GAC")

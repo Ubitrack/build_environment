@@ -15,10 +15,10 @@ if(COMMAND cmake_policy)
     cmake_policy(SET CMP0042 NEW)
   endif()
   if(POLICY CMP0053)
-  	cmake_policy(SET CMP0053 OLD)
+  	cmake_policy(SET CMP0053 NEW)
   endif()
   if(POLICY CMP0054)
-    cmake_policy(SET CMP0054 OLD)
+    cmake_policy(SET CMP0054 NEW)
   endif()
 endif()
 
@@ -77,6 +77,7 @@ if(NOT CMAKE_SIZEOF_VOID_P GREATER 0)
   message(FATAL_ERROR "CMake fails to deterimine the bitness of target platform.
   Please check your CMake and compiler installation. If you are crosscompiling then ensure that your CMake toolchain file correctly sets the compiler details.")
 endif()
+
 
 # ----------------------------------------------------------------------------
 # Detect compiler and target platform architecture
