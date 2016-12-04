@@ -47,11 +47,11 @@ endif(NOT CMAKE_TOOLCHAIN_FILE)
 # Top level UbiTrack project
 # --------------------------------------------------------------
 if(CMAKE_GENERATOR MATCHES Xcode AND XCODE_VERSION VERSION_GREATER 4.3)
-  cmake_minimum_required(VERSION 2.8.8)
+  cmake_minimum_required(VERSION 3.4.0)
 elseif(IOS)
-  cmake_minimum_required(VERSION 2.8.0)
+  cmake_minimum_required(VERSION 3.4.0)
 else()
-  cmake_minimum_required(VERSION 2.6.3)
+  cmake_minimum_required(VERSION 3.4.0)
 endif()
 
 # must go before the project command
@@ -115,7 +115,8 @@ endif()
 if(WIN32)
 	  set(UBITRACK_COMPILE_FLAGS "/EHsc /c /W3 /GR /wd4355 /wd4996 /wd4251 /wd4275 /wd4819 /wd4290")
 	  set(UBITRACK_LINK_FLAGS "/SUBSYSTEM:CONSOLE")
-	  set(UBITRACK_DEFINES "WIN32" "_MBCS" "_WIN32_WINNT=0x501")	
+	  #set(UBITRACK_DEFINES "WIN32" "_MBCS" "_WIN32_WINNT=0x501")	
+    set(UBITRACK_DEFINES "WIN32" "_MBCS")  
     set(UBITRACK_LINK_FLAGS_DEBUG "/NODEFAULTLIB:libc.lib /NODEFAULTLIB:libcmt.lib /NODEFAULTLIB:msvcrt.lib /NODEFAULTLIB:libcd.lib /NODEFAULTLIB:libcmtd.lib")
 endif(WIN32)
 
@@ -331,6 +332,30 @@ endif()
 if(APPLE)
 	set(CMAKE_XCODE_ATTRIBUTE_GCC_VERSION "com.apple.compilers.llvmgcc42")
 endif(APPLE)
+
+
+## Check for Windows ##
+if( WIN32 ) # true if windows (32 and 64 bit)
+    MESSAGE(STATUS "Building for ${CMAKE_SYSTEM_NAME} ${CMAKE_SYSTEM_VERSION}")
+    ## Check for Version ##
+    if( ${CMAKE_SYSTEM_VERSION} EQUAL 6.1 ) # Windows 7
+      MESSAGE(STATUS "Setting minimum Windows version to Win7 WINVER=0x0601")
+      add_definitions(-DWINVER=0x0601)
+    elseif( ${CMAKE_SYSTEM_VERSION} EQUAL 6.2 ) # Windows 8
+      MESSAGE(STATUS "Setting minimum Windows version to Win8 WINVER=0x0602")
+      add_definitions(-DWINVER=0x0602)
+    elseif( ${CMAKE_SYSTEM_VERSION} EQUAL 6.3 ) # Windows 8.1
+      MESSAGE(STATUS "Setting minimum Windows version to Win8.1 WINVER=0x0603")
+      add_definitions(-DWINVER=0x0602)
+    elseif( ${CMAKE_SYSTEM_VERSION} EQUAL 10.0 ) # Windows 10
+      MESSAGE(STATUS "Setting minimum Windows version to Win8.1 WINVER=0x0603")
+      add_definitions(-DWINVER=0x0602)
+    else() # Some other Windows
+      MESSAGE(STATUS "Setting minimum Windows version to Vista WINVER=0x0600")
+      add_definitions(-DWINVER=0x0600)
+    endif()
+
+endif()
 
 
 # add 3rdparty libraries

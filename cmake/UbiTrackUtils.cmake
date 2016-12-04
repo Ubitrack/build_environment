@@ -133,6 +133,12 @@ macro(ut_regex_escape var regex)
   string(REGEX REPLACE "([+.*^$])" "\\\\1" ${var} "${regex}")
 endmacro()
 
+# clears all passed variables
+macro(ut_clear_vars)
+  foreach(_var ${ARGN})
+    unset(${_var} CACHE)
+  endforeach()
+endmacro()
 
 # get absolute path with symlinks resolved
 macro(ut_get_real_path VAR PATHSTR)

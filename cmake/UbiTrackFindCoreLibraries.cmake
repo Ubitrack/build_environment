@@ -2,11 +2,6 @@
 #  Detect 3rd-party libraries
 # ----------------------------
 
-if(WIN32)
-  MESSAGE(STATUS "Setting minimum Windows version to Vista WINVER=0x0600")
-  add_definitions(-DWINVER=0x0600)
-endif(WIN32)
-
 # pthreads
 SET(PTHREAD_ROOT_DIR "${EXTERNAL_LIBRARIES_DIR}/pthread")
 IF(UNIX)
