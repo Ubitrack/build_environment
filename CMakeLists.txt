@@ -66,7 +66,7 @@ endif(NOT CMAKE_BUILD_TYPE)
 
 PROJECT(UbiTrack CXX C)
 
-SET(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" )
+SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake" )
 
 include(cmake/UbiTrackUtils.cmake)
 if(WIN32)
