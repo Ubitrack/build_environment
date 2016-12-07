@@ -7,7 +7,7 @@ import numpy as np
 
 from etw.descriptors import uteventqueue
 
-class MessageLatencyConsumer(EventConsumer):
+class NodeLatencyConsumer(EventConsumer):
 
     def __init__(self):
         self.eventqueue_stats = {}
@@ -42,15 +42,49 @@ class AllocationConsumer(EventConsumer):
         self.eventqueue_stats[key] = samples + 1
 
 
+    @EventHandler(uteventqueue.Event.VisionGpuUpload)
+    def OnVisionGpuUpload(self, event_data):
+        key = "upload_gpu"
+        samples = self.eventqueue_stats.setdefault(key, 0)
+        self.eventqueue_stats[key] = samples + 1
+
+    @EventHandler(uteventqueue.Event.VisionGpuDownload)
+    def OnVisionGpuDownload(self, event_data):
+        key = "download_gpu"
+        samples = self.eventqueue_stats.setdefault(key, 0)
+        self.eventqueue_stats[key] = samples + 1
+
+
+class MessageLatencyConsumer(EventConsumer):
+
+    def __init__(self):
+        self.eventqueue_stats = {}
+        self.create_ts = {}
+
+    @EventHandler(uteventqueue.Event.CreateMeasurement)
+    def OnCreateMeasurement(self, event_data):
+        key = event_data.Priority
+        # will not work with complex graphs!!!
+        self.create_ts[key] = event_data.raw_time_stamp
+        
+    @EventHandler(uteventqueue.Event.ReceiveMeasurement)
+    def OnReceiveMeasurement(self, event_data):
+        key = event_data.Priority
+        cts = self.create_ts.get(key, event_data.raw_time_stamp)
+        dt = event_data.raw_time_stamp - cts
+        self.eventqueue_stats[key] = dt
+
+
 if __name__ == '__main__':
     if len(sys.argv) < 2:
         print "usage: %s <trace>.etl" % sys.argv[0]
         exit(0)
 
     filename = sys.argv[1]
-    ts = MessageLatencyConsumer()
+    ts = NodeLatencyConsumer()
     ac = AllocationConsumer()
-    tes = TraceEventSource([ts, ac], True)
+    mc = MessageLatencyConsumer()
+    tes = TraceEventSource([ts, ac, mc], True)
 
     print "open tracefile"
     tes.OpenFileSession(filename)
@@ -69,4 +103,7 @@ if __name__ == '__main__':
     for k in sorted(ac.eventqueue_stats.keys()):
         value = ac.eventqueue_stats[k]
         print "%s = %d" % (k, value)
+
+    data = np.array(mc.eventqueue_stats.values())
+    print "message_latency (ms): %0.5f" % (data.mean() * (1.0/10000.0))
 
