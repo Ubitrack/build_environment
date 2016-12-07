@@ -12,13 +12,13 @@ if (WIN32)
     # be set up anyway
     get_filename_component(sdk_dir "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Microsoft SDKs\\Windows;CurrentInstallFolder]" REALPATH)
     get_filename_component(kit_dir "[HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows Kits\\Installed Roots;KitsRoot]" REALPATH)
-    if (X64)
+    if (X86_64 OR CMAKE_SIZEOF_VOID_P EQUAL 8)
       set(sdk_bindir "${sdk_dir}/bin/x64")
       set(kit_bindir "${kit_dir}/bin/x64")
-    else (X64)
+    else (X86_64 OR CMAKE_SIZEOF_VOID_P EQUAL 8)
       set(sdk_bindir "${sdk_dir}/bin")
       set(kit_bindir "${kit_dir}/bin/x86")
-    endif (X64)
+    endif (X86_64 OR CMAKE_SIZEOF_VOID_P EQUAL 8)
   endif ()
   find_program(CMAKE_MC_COMPILER mc.exe HINTS "${sdk_bindir}" "${kit_bindir}"
     DOC "path to message compiler")
@@ -41,13 +41,14 @@ CHECK_ETW()
 
 # Create provider headers
 IF(ENABLE_ETW)
+  file(TO_NATIVE_PATH ${CMAKE_INSTALL_PREFIX} NATIVE_INSTALL_PREFIX)
   CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/misc/tracing/etw/ubitrack_etw_providers.man.base
-    ${CMAKE_BINARY_DIR}/utUtil/ubitrack_etw_providers.man COPYONLY)
+    ${CMAKE_BINARY_DIR}/utUtil/ubitrack_etw_providers.man @ONLY)
 
  ADD_CUSTOM_COMMAND(
    OUTPUT "${CMAKE_BINARY_DIR}/utUtil/probes_ubitrack_etw.h" 
            "${CMAKE_BINARY_DIR}/utUtil/probes_ubitrack_etw.rc" 
-           "${CMAKE_BINARY_DIR}/utUtil/probes_ubitrack_etwTemp.bin"
+           "${CMAKE_BINARY_DIR}/utUtil/probes_ubitrack_etwTEMP.BIN"
    COMMAND ${CMAKE_MC_COMPILER} -um ${CMAKE_BINARY_DIR}/utUtil/ubitrack_etw_providers.man -z probes_ubitrack_etw
    WORKING_DIRECTORY "${CMAKE_BINARY_DIR}/utUtil"
    COMMENT "Exectuing: mc.exe -um ${CMAKE_BINARY_DIR}/utUtil/ubitrack_etw_providers.man -z probes_ubitrack_etw"
@@ -58,10 +59,11 @@ ADD_CUSTOM_TARGET(gen_etw_header
   DEPENDS  
   ${CMAKE_BINARY_DIR}/utUtil/probes_ubitrack_etw.h
   ${CMAKE_BINARY_DIR}/utUtil/probes_ubitrack_etw.rc
-  ${CMAKE_BINARY_DIR}/utUtil/probes_ubitrack_etwTemp.bin
+  ${CMAKE_BINARY_DIR}/utUtil/probes_ubitrack_etwTEMP.BIN
   )
 
-  install(FILES ${CMAKE_BINARY_DIR}/utUtil/probes_ubitrack_etw.h DESTINATION "${UBITRACK_INCLUDE_INSTALL_PATH}/utUtil" COMPONENT main)
+  install(FILES ${CMAKE_BINARY_DIR}/utUtil/probes_ubitrack_etw.h DESTINATION "${UBITRACK_INCLUDE_INSTALL_PATH}/utUtil" COMPONENT dev)
+  install(FILES ${CMAKE_BINARY_DIR}/utUtil/ubitrack_etw_providers.man DESTINATION bin COMPONENT dev)
 ENDIF()
 
 FUNCTION(ETW_INSTRUMENT target)

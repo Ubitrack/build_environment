@@ -29,7 +29,7 @@
 @rem Set _NT_SYMBOL_PATH if it is not already set
 
 @if not "%_NT_SYMBOL_PATH%" == "" goto SymbolPathSet
-set _NT_SYMBOL_PATH=SRV*c:\symbols*http://msdl.microsoft.com/download/symbols;H:\Libraries\UbiTrack\build\lib\Debug
+set _NT_SYMBOL_PATH=SRV*c:\symbols*http://msdl.microsoft.com/download/symbols;H:\Ubitrack\build_vs2013-64\lib\Debug
 :SymbolPathSet
 
 

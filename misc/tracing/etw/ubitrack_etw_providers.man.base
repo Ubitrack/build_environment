@@ -67,8 +67,8 @@ Adjust that to match your games actual install path.
           guid="{E59BFE42-2294-44C9-8FD0-B6FD0FDB21FF}"
           name="Ubitrack"
           symbol="UBITRACK"
-          messageFileName="H:\Libraries\UbiTrack-build64\bin\utcore130.dll"
-          resourceFileName="H:\Libraries\UbiTrack-build64\bin\utcore130.dll" >
+          messageFileName="@NATIVE_INSTALL_PREFIX@\bin\utcore@UBITRACK_DLLVERSION@.dll"
+          resourceFileName="@NATIVE_INSTALL_PREFIX@\bin\utcore@UBITRACK_DLLVERSION@.dll" >
         <templates>
           <template tid="T_Eventqueue_Dispatch_Begin">
             <data inType="win:Int32" name="EventDomain" />

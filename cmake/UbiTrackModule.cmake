@@ -406,9 +406,9 @@ macro(ut_set_module_sources)
     endif()
   endforeach()
 
-  # the hacky way to embeed any files into the UbiTrack without modification of its build system
+  # the hacky way to embed any files into the UbiTrack without modification of its build system
   if(COMMAND ut_get_module_external_sources)
-    ut_get_module_external_sources()
+      ut_get_module_external_sources()
   endif()
 
   # use full paths for module to be independent from the module location
@@ -416,6 +416,7 @@ macro(ut_set_module_sources)
 
   set(UBITRACK_MODULE_${the_module}_HEADERS ${UBITRACK_MODULE_${the_module}_HEADERS} CACHE INTERNAL "List of header files for ${the_module}")
   set(UBITRACK_MODULE_${the_module}_SOURCES ${UBITRACK_MODULE_${the_module}_SOURCES} CACHE INTERNAL "List of source files for ${the_module}")
+
 endmacro()
 
 # finds and sets headers and sources for the standard UbiTrack module

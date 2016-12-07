@@ -7,7 +7,7 @@ import numpy as np
 
 from etw.descriptors import uteventqueue
 
-class TestConsumer(EventConsumer):
+class MessageLatencyConsumer(EventConsumer):
 
     def __init__(self):
         self.eventqueue_stats = {}
@@ -24,14 +24,33 @@ class TestConsumer(EventConsumer):
 
 
 
+class AllocationConsumer(EventConsumer):
+
+    def __init__(self):
+        self.eventqueue_stats = {}
+
+    @EventHandler(uteventqueue.Event.VisionAllocateGpu)
+    def OnVisionAllocateGpu(self, event_data):
+        key = "allocate_gpu"
+        samples = self.eventqueue_stats.setdefault(key, 0)
+        self.eventqueue_stats[key] = samples + 1
+
+    @EventHandler(uteventqueue.Event.VisionAllocateCpu)
+    def OnVisionAllocateCpu(self, event_data):
+        key = "allocate_cpu"
+        samples = self.eventqueue_stats.setdefault(key, 0)
+        self.eventqueue_stats[key] = samples + 1
+
+
 if __name__ == '__main__':
     if len(sys.argv) < 2:
         print "usage: %s <trace>.etl" % sys.argv[0]
         exit(0)
 
     filename = sys.argv[1]
-    ts = TestConsumer()
-    tes = TraceEventSource([ts], True)
+    ts = MessageLatencyConsumer()
+    ac = AllocationConsumer()
+    tes = TraceEventSource([ts, ac], True)
 
     print "open tracefile"
     tes.OpenFileSession(filename)
@@ -45,3 +64,9 @@ if __name__ == '__main__':
         data = np.vstack(values)
         ed, cn, pn = k
         print "%s:%s-%s (%d) = %0.5f" % (ed, cn, pn, len(values), data[:,2].mean())
+
+    print "allocations"
+    for k in sorted(ac.eventqueue_stats.keys()):
+        value = ac.eventqueue_stats[k]
+        print "%s = %d" % (k, value)
+

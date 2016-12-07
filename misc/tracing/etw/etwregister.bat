@@ -14,8 +14,8 @@
 
 @rem Customize to specify the location of your provider DLL or EXE
 
-@set DLLFileMain=%UBITRACK_PATH%\utdataflow100.dll
-@set ManifestFileMain=%~dp0ubitrack_etw_providers.man.base
+@set DLLFileMain=%UBITRACK_COMPONENTS_PATH%\..\utdataflow130.dll
+@set ManifestFileMain=%UBITRACK_COMPONENTS_PATH%\..\ubitrack_etw_providers.man
 
 
 @echo This will register the custom ETW providers.
