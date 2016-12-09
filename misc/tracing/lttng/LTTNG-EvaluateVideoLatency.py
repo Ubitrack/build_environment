@@ -12,7 +12,7 @@ import numpy as np
 
 def parse_trace(session_name):
     tc1 = babeltrace.TraceCollection()
-    tc1.add_trace("/home/jack/lttng-traces/{}/ust/uid/0/64-bit".format(session_name), "ctf")
+    tc1.add_trace("/home/netlabs/lttng-traces/{}/ust/uid/1000/64-bit".format(session_name), "ctf")
     msgs_start = {}
     msgs_latency = {}
     gpu_alloc = 0
@@ -43,42 +43,18 @@ def parse_trace(session_name):
 
 # In[83]:
 
-latency_gpu, allocations_gpu = parse_trace("auto-20160715-191046")
-
-
-# In[84]:
-
-latency_gpu.mean()
-
-
-# In[85]:
-
-latency_gpu.describe()
-
-
-# In[86]:
-
-allocations_gpu
+latency_gpu, allocations_gpu = parse_trace("auto-20161209-193709")
+print(latency_gpu.mean())
+print(latency_gpu.describe())
+print(allocations_gpu)
 
 
 # # Freenect-Undistort-4xRotate90-BgImage
 
 # In[87]:
 
-latency_cpu, allocations_cpu = parse_trace("auto-20160715-191330")
-
-
-# In[88]:
-
-latency_cpu.mean()
-
-
-# In[89]:
-
-latency_cpu.describe()
-
-
-# In[90]:
-
-allocations_cpu
+# latency_cpu, allocations_cpu = parse_trace("auto-20161209-194045")
+# print(latency_cpu.mean())
+# print(latency_cpu.describe())
+# print(allocations_cpu)
 
