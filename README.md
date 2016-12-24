@@ -12,20 +12,21 @@ How to build Ubitrack
 In order to build ubitrack the following tools have to be installed:
 
 - Git
-
-- C++ Compiler like gcc, clang, or MSVC
-
+- C++ Compiler like gcc, clang, or MSVC (VS 2010 - VS 2015)
 - CMake 3.6
 
 ###2. Dependencies
 
-- Boost C++ Libraries >= 1.59
-
+- Boost C++ Libraries >= 1.58
 - OpenCV >= 3.1
-
-- CLAPACK
-
+- LAPACK
 - PThread (linux/osx)
+- GLFW >= 3.1
+- GLEW
+- ASSIMP
+- OpenCL (optional)
+- Java JDK (optional)
+- Swig >= 3.0 (optional)
 
 
 
