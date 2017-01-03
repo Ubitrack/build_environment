@@ -514,16 +514,24 @@ macro(ut_create_module)
 	    set_target_properties(${the_module} PROPERTIES LINK_FLAGS "/NODEFAULTLIB:secchk")
 	  endif()
 	  set_target_properties(${the_module} PROPERTIES LINK_FLAGS "/NODEFAULTLIB:libc /DEBUG")
+  endif()
 
-	  set_target_properties(${the_module} PROPERTIES COMPILE_FLAGS "${UBITRACK_COMPILE_FLAGS}")
-	  set_target_properties(${the_module} PROPERTIES LINK_FLAGS "${UBITRACK_LINK_FLAGS}")
-	  foreach(_symb ${UBITRACK_DEFINES})
-		  set_target_properties(${the_module} PROPERTIES DEFINE_SYMBOL ${_symb})
-	  endforeach()
-    endif()
+  foreach(_flag ${UBITRACK_COMPILE_FLAGS})
+    set_target_properties(${the_module} PROPERTIES COMPILE_FLAGS "${_flag}")
+  endforeach()
+  foreach(_flag ${UBITRACK_LINK_FLAGS})
+    set_target_properties(${the_module} PROPERTIES LINK_FLAGS "${_flag}")
+  endforeach()
+  foreach(_flag ${UBITRACK_LINK_FLAGS_DEBUG})
+    set_target_properties(${the_module} PROPERTIES LINK_FLAGS_DEBUG "${_flag}")
+  endforeach()
+  foreach(_symb ${UBITRACK_DEFINES})
+    set_target_properties(${the_module} PROPERTIES DEFINE_SYMBOL ${_symb})
+  endforeach()
+
 
 	#set compile definitions
-    set_target_properties(${the_module} PROPERTIES COMPILE_DEFINITIONS "${UBITRACK_MODULE_${the_module}_COMPILE_DEFINITIONS}")
+  set_target_properties(${the_module} PROPERTIES COMPILE_DEFINITIONS "${UBITRACK_MODULE_${the_module}_COMPILE_DEFINITIONS}")
 	
 	install(TARGETS ${the_module}
 	  RUNTIME DESTINATION bin COMPONENT libs
