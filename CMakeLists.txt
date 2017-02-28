@@ -124,35 +124,6 @@ if(WIN32)
     set(UBITRACK_LINK_FLAGS_DEBUG "/NODEFAULTLIB:libc.lib /NODEFAULTLIB:libcmt.lib /NODEFAULTLIB:msvcrt.lib /NODEFAULTLIB:libcd.lib /NODEFAULTLIB:libcmtd.lib")
 endif(WIN32)
 
-# Option to use Macports ??
-if(APPLE)
-  list(APPEND CMAKE_LIBRARY_PATH /opt/local/lib)	
-
-  set(CMAKE_MACOSX_RPATH ON)
-
-  # use, i.e. don't skip the full RPATH for the build tree
-  SET(CMAKE_SKIP_BUILD_RPATH  FALSE)
-
-  # when building, don't use the install RPATH already
-  # (but later on when installing)
-  SET(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
-
-  SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
-
-  # add the automatically determined parts of the RPATH
-  # which point to directories outside the build tree to the install RPATH
-  SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
-
-
-  # the RPATH to be used when installing, but only if it's not a system directory
-  LIST(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/lib" isSystemDir)
-  IF("${isSystemDir}" STREQUAL "-1")
-     SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
-  ENDIF("${isSystemDir}" STREQUAL "-1")
-
-
-endif(APPLE)
-
 if(MSVC_IDE OR CMAKE_GENERATOR MATCHES Xcode)
   set(ENABLE_SOLUTION_FOLDERS0 ON)
 else()
@@ -376,6 +347,25 @@ set(UBITRACK_CORE_DEPS_INCLUDE_DIR
 
 # Extra UbiTrack targets: uninstall, package_source, perf, etc.
 include(cmake/UbiTrackExtraTargets.cmake)
+
+
+if(APPLE)
+  set(CMAKE_MACOSX_RPATH ON)
+
+  # use, i.e. don't skip the full RPATH for the build tree
+  SET(CMAKE_SKIP_BUILD_RPATH  FALSE)
+
+  # when building, don't use the install RPATH already
+  # (but later on when installing)
+  SET(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
+
+  SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+
+  # add the automatically determined parts of the RPATH
+  # which point to directories outside the build tree to the install RPATH
+  SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
+endif(APPLE)
 
 
 # UbiTrack modules
