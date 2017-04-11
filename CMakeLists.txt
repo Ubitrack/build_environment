@@ -345,6 +345,10 @@ set(UBITRACK_CORE_DEPS_INCLUDE_DIR
 		${Boost_INCLUDE_DIR} 
 		)
 
+if(HAVE_MSGPACK)
+  set(UBITRACK_CORE_DEPS_INCLUDE_DIR ${UBITRACK_CORE_DEPS_INCLUDE_DIR} ${MSGPACK_INCLUDE_DIRS})
+endif(HAVE_MSGPACK)
+
 # Extra UbiTrack targets: uninstall, package_source, perf, etc.
 include(cmake/UbiTrackExtraTargets.cmake)
 
