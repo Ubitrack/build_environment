@@ -46,13 +46,7 @@ endif(NOT CMAKE_TOOLCHAIN_FILE)
 # --------------------------------------------------------------
 # Top level UbiTrack project
 # --------------------------------------------------------------
-if(CMAKE_GENERATOR MATCHES Xcode AND XCODE_VERSION VERSION_GREATER 4.3)
-  cmake_minimum_required(VERSION 3.4.0)
-elseif(IOS)
-  cmake_minimum_required(VERSION 3.4.0)
-else()
-  cmake_minimum_required(VERSION 3.4.0)
-endif()
+cmake_minimum_required(VERSION 3.4.0)
 
 # must go before the project command
 set(CMAKE_CONFIGURATION_TYPES "Debug;Release;RelWithDebInfo" CACHE STRING "Configs" FORCE)
@@ -333,8 +327,15 @@ if( WIN32 ) # true if windows (32 and 64 bit)
 endif()
 
 
-# add 3rdparty libraries
-include(cmake/UbiTrackFindCoreLibraries.cmake)
+IF(UBITRACK_USE_CONAN)
+  include(${UBITRACK_CONAN_CMAKE_CONFIG})
+  conan_basic_setup()
+  include(cmake/UbiTrackFindConanLibraries.cmake)
+ELSE(UBITRACK_USE_CONAN)
+  include(cmake/UbiTrackFindCoreLibraries.cmake)
+ENDIF(UBITRACK_USE_CONAN)
+
+include(cmake/UbiTrackFindSystemLibraries.cmake)
 
 # all core includes
 set(UBITRACK_CORE_DEPS_INCLUDE_DIR 
