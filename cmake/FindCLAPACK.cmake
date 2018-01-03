@@ -30,7 +30,7 @@ find_library( BLAS_LIBRARY NAMES blas
   PATHS $ENV{CLAPACK_DIR} ${CLAPACK_DIR} 
   PATH_SUFFIXES "lib")
 
-find_library( F2C_LIBRARY NAMES f2c 
+find_library( F2C_LIBRARY NAMES f2c libf2c
   PATHS $ENV{CLAPACK_DIR} ${CLAPACK_DIR} 
   PATH_SUFFIXES "lib")
 
