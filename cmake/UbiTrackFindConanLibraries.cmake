@@ -47,11 +47,11 @@ if(Boost_FOUND)
   SET(HAVE_BOOST 1)
 
   link_directories(${CONAN_LIB_DIRS_BOOST})
-  message (STATUS "  Boost_LIBRARIES: ${Boost_LIBRARIES}")
+  message (STATUS "Found Boost, Includes: ${Boost_INCLUDE_DIR} Libraries: ${Boost_LIBRARIES}")
 endif(Boost_FOUND)
 
-set(CLAPACK_DIR "${CONAN_CLAPACK_ROOT}")
 
+set(CLAPACK_DIR "${CONAN_CLAPACK_ROOT}")
 SET(HAVE_LAPACK 0)
 FIND_PACKAGE(CLAPACK)
 IF(CLAPACK_FOUND)
@@ -65,7 +65,7 @@ ENDIF(CLAPACK_FOUND)
 #OpenCV 
 set(OPENCV_INCLUDE_DIR "${CONAN_INCLUDE_DIRS_OPENCV}")
 set(OPENCV_LIBRARIES "${CONAN_LIBS_OPENCV}")
-MESSAGE(STATUS "Found: opencv, includes: ${}, libraries: ${OPENCV_LIBRARIES}")
+MESSAGE(STATUS "Found: OpenCV, Includes: ${OPENCV_INCLUDE_DIR}, Libraries: ${OPENCV_LIBRARIES}")
 add_definitions(-DHAVE_OPENCV)
 SET(HAVE_OPENCV 1)
 
