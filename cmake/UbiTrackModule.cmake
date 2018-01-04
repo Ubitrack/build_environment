@@ -145,6 +145,44 @@ macro(ut_add_module _name)
   endif(UBITRACK_INITIAL_PASS)
 endmacro()
 
+
+# import an externally defined UbiTrack
+# Usage:
+#   ut_import_module(<name>)
+# Example:
+#   ut_import_module(yaom)
+macro(ut_import_module _name)
+  string(TOLOWER "${_name}" name)
+  set(the_module ${name})
+
+  # the first pass - collect modules info, the second pass - create targets
+  if(UBITRACK_INITIAL_PASS)
+    #guard agains redefinition
+    if(";${UBITRACK_MODULES_BUILD};${UBITRACK_MODULES_DISABLED_USER};" MATCHES ";${the_module};")
+      message(FATAL_ERROR "Redefinition of the ${the_module} module.
+  at:                    ${CMAKE_CURRENT_SOURCE_DIR}
+  previously defined at: ${UBITRACK_MODULE_${the_module}_LOCATION}
+")
+    endif()
+
+    if(NOT DEFINED the_description)
+      set(the_description "The ${name} UbiTrack module")
+    endif()
+
+    # remember the module details
+    set(UBITRACK_MODULE_${the_module}_DESCRIPTION "${the_description}" CACHE INTERNAL "Brief description of ${the_module} module")
+  
+    # stop processing of current file
+    return()
+  else(UBITRACK_INITIAL_PASS)
+    add_library(${the_module} SHARED IMPORTED)
+    set(UBITRACK_MODULE_${the_module}_COMPILE_DEFINITIONS)
+    add_dependencies(ubitrack_modules ${the_module})
+  endif(UBITRACK_INITIAL_PASS)
+endmacro()
+
+
+
 # excludes module from current configuration
 macro(ut_module_disable module)
   set(__modname ${module})
