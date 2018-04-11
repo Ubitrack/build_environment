@@ -132,6 +132,7 @@
 #                                the documentation above regarding this
 #                                annoying, but necessary variable :(
 #
+#	set(Boost_DEBUG TRUE)
 #   Boost_DEBUG                  Set this to TRUE to enable debugging output
 #                                of FindBoost.cmake if you are having problems.
 #                                Please enable this before filing any bug
@@ -143,6 +144,7 @@
 #                                keyword is specified in find_package().
 #                                  [Since CMake 2.8.0]
 #
+	set(Boost_COMPILER -vc141)
 #   Boost_COMPILER               Set this to the compiler suffix used by Boost
 #                                (e.g. "-gcc43") if FindBoost has problems finding
 #                                the proper Boost installation
@@ -443,6 +445,8 @@ function(_Boost_GUESS_COMPILER_PREFIX _ret)
     else()
       set (_boost_COMPILER "-il")
     endif()
+elseif (MSVC15)
+    set(_boost_COMPILER "-vc141")
   elseif (MSVC14)
     set(_boost_COMPILER "-vc140")
   elseif (MSVC12)
@@ -522,6 +526,10 @@ if(NOT DEFINED Boost_USE_MULTITHREADED)
     set(Boost_USE_MULTITHREADED TRUE)
 endif()
 
+if(NOT DEFINED Boost_USE_X64BIT)
+    set(Boost_USE_X64BIT TRUE)
+endif()
+
 # Check the version of Boost against the requested version.
 if(Boost_FIND_VERSION AND NOT Boost_FIND_VERSION_MINOR)
   message(SEND_ERROR "When requesting a specific version of Boost, you must provide at least the major and minor version numbers, e.g., 1.34")
@@ -537,7 +545,7 @@ else()
   # The user has not requested an exact version.  Among known
   # versions, find those that are acceptable to the user request.
   set(_Boost_KNOWN_VERSIONS ${Boost_ADDITIONAL_VERSIONS}
-    "1.59.0" "1.59" "1.58.0" "1.58" "1.57.0" "1.57" "1.56.0" "1.56" "1.55.0" "1.55" "1.54.0" "1.54"
+    "1.66" "1.66.0" "1.59.0" "1.59" "1.58.0" "1.58" "1.57.0" "1.57" "1.56.0" "1.56" "1.55.0" "1.55" "1.54.0" "1.54"
     "1.53.0" "1.53" "1.52.0" "1.52" "1.51.0" "1.51"
     "1.50.0" "1.50" "1.49.0" "1.49" "1.48.0" "1.48" "1.47.0" "1.47" "1.46.1"
     "1.46.0" "1.46" "1.45.0" "1.45" "1.44.0" "1.44" "1.43.0" "1.43" "1.42.0" "1.42"
@@ -805,6 +813,16 @@ set(Boost_ERROR_REASON)
       "_boost_MULTITHREADED = ${_boost_MULTITHREADED}")
   endif()
 
+    set (_boost_X64BIT "-x64")
+  if( NOT Boost_USE_X64BIT )
+    set (_boost_X64BIT "")
+  endif()
+  
+  if(Boost_DEBUG)
+    message(STATUS "[ ${CMAKE_CURRENT_LIST_FILE}:${CMAKE_CURRENT_LIST_LINE} ] "
+      "_boost_X64BIT = ${_boost_X64BIT}")
+  endif()
+  
   #======================
   # Systematically build up the Boost ABI tag
   # http://boost.org/doc/libs/1_41_0/more/getting_started/windows.html#library-naming
@@ -952,6 +970,7 @@ set(Boost_ERROR_REASON)
     #
     set(_boost_RELEASE_NAMES
       ${Boost_LIB_PREFIX}boost_${COMPONENT}${_boost_COMPILER}${_boost_MULTITHREADED}${_boost_RELEASE_ABI_TAG}-${Boost_LIB_VERSION}
+      ${Boost_LIB_PREFIX}boost_${COMPONENT}${_boost_COMPILER}${_boost_MULTITHREADED}${_boost_RELEASE_ABI_TAG}${_boost_X64BIT}-${Boost_LIB_VERSION}
       ${Boost_LIB_PREFIX}boost_${COMPONENT}${_boost_COMPILER}${_boost_MULTITHREADED}${_boost_RELEASE_ABI_TAG}
       ${Boost_LIB_PREFIX}boost_${COMPONENT}${_boost_MULTITHREADED}${_boost_RELEASE_ABI_TAG}-${Boost_LIB_VERSION}
       ${Boost_LIB_PREFIX}boost_${COMPONENT}${_boost_MULTITHREADED}${_boost_RELEASE_ABI_TAG}
@@ -983,6 +1002,7 @@ set(Boost_ERROR_REASON)
     #
     set(_boost_DEBUG_NAMES
       ${Boost_LIB_PREFIX}boost_${COMPONENT}${_boost_COMPILER}${_boost_MULTITHREADED}${_boost_DEBUG_ABI_TAG}-${Boost_LIB_VERSION}
+      ${Boost_LIB_PREFIX}boost_${COMPONENT}${_boost_COMPILER}${_boost_MULTITHREADED}${_boost_DEBUG_ABI_TAG}${_boost_X64BIT}-${Boost_LIB_VERSION}
       ${Boost_LIB_PREFIX}boost_${COMPONENT}${_boost_COMPILER}${_boost_MULTITHREADED}${_boost_DEBUG_ABI_TAG}
       ${Boost_LIB_PREFIX}boost_${COMPONENT}${_boost_MULTITHREADED}${_boost_DEBUG_ABI_TAG}-${Boost_LIB_VERSION}
       ${Boost_LIB_PREFIX}boost_${COMPONENT}${_boost_MULTITHREADED}${_boost_DEBUG_ABI_TAG}
